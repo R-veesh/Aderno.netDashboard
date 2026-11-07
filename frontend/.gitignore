@@ -1,0 +1,17 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Production output
+dist
+dist-ssr
+*.local
+
+# Environment & Editor
+.env
+.env*.local
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store

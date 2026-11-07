@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Environment files
+.env
+.env.backup
+.env.production
+.phpunit.result.cache
+
+# Builds
+dist/
+frontend/dist/
+frontend/node_modules/
+
+# Logs and databases
+*.log
+storage/*.key
+storage/logs/*.log
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+database/database.sqlite
+database/database.sqlite-journal
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

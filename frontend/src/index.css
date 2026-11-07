@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #080A0F;
+  --bg-secondary: #0E121A;
+  --bg-card: rgba(14, 18, 26, 0.75);
+  --bg-card-hover: rgba(20, 26, 38, 0.9);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-glow: rgba(0, 240, 255, 0.35);
+  --accent-cyan: #00F0FF;
+  --accent-orange: #FF5E1E;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-primary);
+  color: #F8FAFC;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #080A0F;
+}
+::-webkit-scrollbar-thumb {
+  background: #1E293B;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00F0FF;
+}
+
+.font-display {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.font-tech {
+  font-family: 'Michroma', sans-serif;
+}
+
+.font-mono-code {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.glass-panel {
+  background: rgba(14, 18, 26, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-glow {
+  background: rgba(14, 18, 26, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 94, 30, 0.25);
+  box-shadow: 0 0 25px rgba(255, 94, 30, 0.06);
+}
+
+.glass-panel-cyan {
+  background: rgba(14, 18, 26, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.06);
+}
+
+.btn-cyan {
+  background: linear-gradient(135deg, #00F0FF 0%, #0099FF 100%);
+  color: #080A0F;
+  font-weight: 700;
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+.btn-cyan:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0, 240, 255, 0.4);
+}
+
+.btn-orange {
+  background: linear-gradient(135deg, #FF5E1E 0%, #FF8A00 100%);
+  color: #FFFFFF;
+  font-weight: 600;
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+.btn-orange:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(255, 94, 30, 0.4);
+}

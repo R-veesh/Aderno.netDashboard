@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="16" fill="#080A0F"/>
+  <path d="M32 8L52 20V44L32 56L12 44V20L32 8Z" stroke="#00F0FF" stroke-width="2.5" stroke-dasharray="4 2"/>
+  <polygon points="32,16 46,46 38,46 32,32 26,46 18,46" fill="url(#dashGrad)"/>
+  <circle cx="32" cy="24" r="3" fill="#FF5E1E"/>
+  <defs>
+    <linearGradient id="dashGrad" x1="18" y1="16" x2="46" y2="46" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00F0FF"/>
+      <stop offset="1" stop-color="#3B82F6"/>
+    </linearGradient>
+  </defs>
+</svg>
