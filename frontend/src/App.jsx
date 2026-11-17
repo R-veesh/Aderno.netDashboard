@@ -16,7 +16,7 @@ export default function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#080A0F] text-slate-100 flex">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex selection:bg-[#CCFF00] selection:text-slate-900">
       {/* Sidebar Navigation */}
       <Sidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
 

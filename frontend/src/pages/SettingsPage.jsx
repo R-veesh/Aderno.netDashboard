@@ -9,50 +9,57 @@ export default function SettingsPage() {
     <div className="space-y-8">
       
       {/* Header */}
-      <div className="pb-6 border-b border-white/10">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">CONFIGURATION</span>
+      <div className="pb-6 border-b border-slate-200">
+        <div className="flex items-center gap-2 mb-1.5">
+          <span className="text-xs font-mono text-[#0038FF] bg-[#0038FF]/10 px-3 py-0.5 rounded-full border border-[#0038FF]/20 font-bold uppercase tracking-wider">
+            CONFIGURATION
+          </span>
         </div>
-        <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white">
+        <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
           System Settings & Platform Profile
         </h1>
+        <p className="text-xs sm:text-sm text-slate-600 mt-1">
+          Review tenant connection details, active identity credentials, and cryptographic system environment.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* User Profile Card */}
         <div className="lg:col-span-5 glass-panel p-6 rounded-3xl space-y-5">
-          <div className="flex items-center gap-4 pb-4 border-b border-white/10">
-            <div className="w-14 h-14 rounded-2xl bg-[#FF5E1E]/20 text-[#FF5E1E] font-mono font-bold text-xl flex items-center justify-center border border-[#FF5E1E]/30">
+          <div className="flex items-center gap-4 pb-4 border-b border-slate-200">
+            <div className="w-14 h-14 rounded-2xl bg-[#0038FF]/10 text-[#0038FF] font-mono font-bold text-xl flex items-center justify-center border border-[#0038FF]/20">
               {currentUser.avatar}
             </div>
             <div>
-              <h2 className="font-display text-lg font-bold text-white">{currentUser.name}</h2>
-              <span className="text-xs font-mono text-[#00F0FF]">{currentUser.role}</span>
-              <span className="text-[11px] text-slate-400 block font-mono">{currentUser.email}</span>
+              <h2 className="font-display text-lg font-bold text-slate-900">{currentUser.name}</h2>
+              <span className="text-xs font-mono font-bold text-[#0038FF]">{currentUser.role}</span>
+              <span className="text-[11px] text-slate-500 block font-mono">{currentUser.email}</span>
             </div>
           </div>
 
           <div className="space-y-3 text-xs font-mono">
-            <div className="flex justify-between py-1.5 border-b border-white/5 text-slate-400">
+            <div className="flex justify-between py-1.5 border-b border-slate-100 text-slate-600">
               <span>Department:</span>
-              <span className="text-white">{currentUser.department}</span>
+              <span className="text-slate-900 font-bold">{currentUser.department}</span>
             </div>
-            <div className="flex justify-between py-1.5 border-b border-white/5 text-slate-400">
+            <div className="flex justify-between py-1.5 border-b border-slate-100 text-slate-600">
               <span>Access Level:</span>
-              <span className="text-emerald-400 font-bold">Authenticated Bearer</span>
+              <span className="text-emerald-700 font-bold">Authenticated Bearer</span>
             </div>
-            <div className="flex justify-between py-1.5 border-b border-white/5 text-slate-400">
+            <div className="flex justify-between py-1.5 border-b border-slate-100 text-slate-600">
               <span>Tenant Environment:</span>
-              <span className="text-white">aderno.net (Enterprise Prod)</span>
+              <span className="text-slate-900 font-bold">aderno.net (Enterprise Prod)</span>
             </div>
           </div>
 
           <div className="pt-2">
-            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block mb-2">ASSIGNED ROLE CAPABILITIES</span>
+            <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider font-bold block mb-2">
+              ASSIGNED ROLE CAPABILITIES
+            </span>
             <div className="flex flex-wrap gap-1.5">
               {currentUser.permissions.map((p, i) => (
-                <span key={i} className="px-2 py-0.5 rounded bg-white/5 border border-white/5 text-[10px] font-mono text-slate-300">
+                <span key={i} className="px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-[10px] font-mono text-slate-700 font-semibold">
                   {p}
                 </span>
               ))}
@@ -60,54 +67,55 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Backend & Deployment Status */}
-        <div className="lg:col-span-7 glass-panel p-6 rounded-3xl space-y-5">
-          <div className="pb-4 border-b border-white/10">
-            <h2 className="font-display text-lg font-bold text-white flex items-center gap-2">
-              <Server className="w-4 h-4 text-[#FF5E1E]" />
-              <span>Full-Stack Architecture Diagnostics</span>
-            </h2>
-            <p className="text-xs text-slate-400 mt-1">Verified environment configuration for app.aderno.net</p>
-          </div>
-
-          <div className="space-y-3 font-mono text-xs">
-            <div className="p-3.5 rounded-xl bg-black/40 border border-white/5 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
-                <span className="text-slate-300">Frontend Client:</span>
-              </div>
-              <span className="text-white">React 19 / Vite SPA (Subdomain Gateway)</span>
+        {/* System & Architecture Info */}
+        <div className="lg:col-span-7 space-y-5">
+          
+          <div className="glass-panel p-6 rounded-3xl space-y-4">
+            <div className="flex items-center gap-3 pb-3 border-b border-slate-200">
+              <Server className="w-5 h-5 text-[#0038FF]" />
+              <h2 className="font-display text-base font-bold text-slate-900">Topology & Environment Context</h2>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-black/40 border border-white/5 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
-                <span className="text-slate-300">REST Service Layer:</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                <span className="text-slate-500 text-[10px] uppercase font-bold block">FRONTEND ARCHITECTURE</span>
+                <span className="text-slate-900 font-bold">React 19 & Vite 6 (Tailwind v4)</span>
+                <span className="text-emerald-600 block text-[10px]">Node / Browser SPA Active</span>
               </div>
-              <span className="text-white">PHP / Laravel 11 REST API</span>
-            </div>
 
-            <div className="p-3.5 rounded-xl bg-black/40 border border-white/5 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
-                <span className="text-slate-300">Relational Database:</span>
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                <span className="text-slate-500 text-[10px] uppercase font-bold block">SERVICE LAYER</span>
+                <span className="text-slate-900 font-bold">PHP 8.2 / REST Controller</span>
+                <span className="text-[#0038FF] block text-[10px]">FastCGI / Nginx Reverse Proxy</span>
               </div>
-              <span className="text-white">SQLite Relational Engine</span>
-            </div>
 
-            <div className="p-3.5 rounded-xl bg-black/40 border border-white/5 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-2 h-2 rounded-full bg-[#00F0FF]"></div>
-                <span className="text-slate-300">Proposed AI Framework:</span>
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                <span className="text-slate-500 text-[10px] uppercase font-bold block">DATABASE STATE ENGINE</span>
+                <span className="text-slate-900 font-bold">MySQL InnoDB Transactional</span>
+                <span className="text-slate-500 block text-[10px]">Relational FK & Ledger ACID</span>
               </div>
-              <span className="text-[#00F0FF]">NVIDIA NeMo & NIM Microservices</span>
+
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                <span className="text-slate-500 text-[10px] uppercase font-bold block">PUBLIC WEB INTEGRATION</span>
+                <span className="text-slate-900 font-bold">https://aderno.net</span>
+                <span className="text-emerald-600 block text-[10px]">SSL TLS 1.3 Certified</span>
+              </div>
             </div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 text-xs text-slate-400 leading-relaxed">
-            <strong className="text-white block mb-1">Production Maintenance Policy:</strong>
-            All transaction states, approval timestamps, and vendor scorecards are persisted under transactional ACID guarantees. Requisitions cannot be purged once dispatched to a Purchase Order.
+          <div className="glass-panel p-6 rounded-3xl flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <ShieldCheck className="w-6 h-6 text-emerald-600" />
+              <div>
+                <span className="font-display font-bold text-sm text-slate-900 block">Cryptographic Audit Enforcement</span>
+                <span className="text-xs text-slate-500">Every requisition decision is cryptographically signed and stored.</span>
+              </div>
+            </div>
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-mono font-bold">
+              Active
+            </span>
           </div>
+
         </div>
 
       </div>

@@ -57,88 +57,101 @@ export default function PurchaseOrders() {
     <div className="space-y-6">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] font-mono text-[#FF5E1E] bg-[#FF5E1E]/10 px-2 py-0.5 rounded border border-[#FF5E1E]/30 font-bold uppercase">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="text-xs font-mono text-[#0038FF] bg-[#0038FF]/10 px-3 py-0.5 rounded-full border border-[#0038FF]/20 font-bold uppercase tracking-wider">
               MODULE 03
             </span>
-            <span className="text-xs font-mono text-slate-400">TOTAL: {orders.length} PURCHASE ORDERS</span>
+            <span className="text-xs font-mono text-slate-500">TOTAL: {orders.length} PURCHASE ORDERS</span>
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white">
-            Purchase Order Management
+          <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Purchase Orders & Dispatches
           </h1>
+          <p className="text-xs sm:text-sm text-slate-600 mt-1">
+            Generate and monitor binding purchase orders, delivery statuses, and supplier fulfillment.
+          </p>
         </div>
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="btn-orange text-xs py-2.5 px-5 shadow-lg shadow-[#FF5E1E]/20 self-start sm:self-auto"
+          className="btn-primary-cyber text-xs py-2.5 px-5 self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
           <span>Generate Purchase Order</span>
         </button>
       </div>
 
-      {/* Search */}
+      {/* Search Bar */}
       <div className="glass-panel p-4 rounded-2xl flex items-center justify-between">
         <div className="relative flex-1 max-w-md">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Search PO number, title, or linked supplier..."
+            placeholder="Search by PO number, item title, or supplier..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-xl bg-black/40 border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-[#FF5E1E]"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0038FF] focus:bg-white shadow-xs"
           />
         </div>
       </div>
 
-      {/* Orders Table */}
-      <div className="glass-panel rounded-2xl overflow-hidden border border-white/10">
+      {/* Table */}
+      <div className="glass-panel rounded-2xl overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs font-mono">
+          <table className="w-full text-left text-xs">
             <thead>
-              <tr className="bg-[#05070B] border-b border-white/10 text-slate-400">
-                <th className="py-3 px-4">PO_NUMBER</th>
-                <th className="py-3 px-4">LINKED_REQ</th>
-                <th className="py-3 px-4">SUPPLIER</th>
-                <th className="py-3 px-4">DESCRIPTION</th>
-                <th className="py-3 px-4 text-right">AMOUNT</th>
-                <th className="py-3 px-4 text-center">FULFILLMENT</th>
-                <th className="py-3 px-4 text-center">PAYMENT</th>
-                <th className="py-3 px-4 text-right">ACTION</th>
+              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-mono text-[11px] font-bold uppercase tracking-wider">
+                <th className="py-3.5 px-4">PO Number</th>
+                <th className="py-3.5 px-4">Origin REQ</th>
+                <th className="py-3.5 px-4">Line Items Title</th>
+                <th className="py-3.5 px-4">Vendor Partner</th>
+                <th className="py-3.5 px-4">Total Value</th>
+                <th className="py-3.5 px-4">Delivery SLA</th>
+                <th className="py-3.5 px-4">Fulfillment</th>
+                <th className="py-3.5 px-4 text-right">Details</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 text-slate-300">
+            <tbody className="divide-y divide-slate-100 font-sans">
               {filtered.map((po) => (
-                <tr key={po.id} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="py-3.5 px-4 font-bold text-white">{po.id}</td>
-                  <td className="py-3.5 px-4 text-[#FF5E1E]">{po.reqId}</td>
-                  <td className="py-3.5 px-4 text-slate-200 font-sans font-medium">{po.supplierName}</td>
-                  <td className="py-3.5 px-4 font-sans text-slate-300 max-w-xs truncate">{po.title}</td>
-                  <td className="py-3.5 px-4 text-right font-bold text-white">${Number(po.totalAmount).toLocaleString()}</td>
-                  <td className="py-3.5 px-4 text-center">
-                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-semibold inline-flex items-center gap-1 ${
-                      po.status === 'Delivered' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' :
-                      po.status === 'Dispatched' ? 'bg-[#00F0FF]/10 text-[#00F0FF] border border-[#00F0FF]/30' :
-                      'bg-slate-700/30 text-slate-300'
-                    }`}>
-                      {po.status === 'Delivered' ? <CheckCircle className="w-3 h-3" /> : <Truck className="w-3 h-3" />}
-                      {po.status}
-                    </span>
+                <tr key={po.id} className="hover:bg-slate-50/80 transition-colors">
+                  <td className="py-3.5 px-4 font-mono font-bold text-[#0038FF]">
+                    {po.id}
                   </td>
-                  <td className="py-3.5 px-4 text-center">
-                    <span className="text-[10px] font-mono text-slate-400 bg-white/5 px-2 py-0.5 rounded">
-                      {po.paymentStatus}
+                  <td className="py-3.5 px-4 font-mono text-slate-500">
+                    {po.reqId}
+                  </td>
+                  <td className="py-3.5 px-4 font-semibold text-slate-900">
+                    {po.title}
+                  </td>
+                  <td className="py-3.5 px-4 text-slate-700">
+                    {po.supplierName}
+                  </td>
+                  <td className="py-3.5 px-4 font-mono font-bold text-slate-900">
+                    ${Number(po.totalAmount).toLocaleString()}
+                  </td>
+                  <td className="py-3.5 px-4 font-mono text-slate-600">
+                    {po.deliveryDate}
+                  </td>
+                  <td className="py-3.5 px-4">
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-mono text-[10px] font-bold ${
+                      po.status === 'Fulfilled' 
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                        : po.status === 'Dispatched' 
+                        ? 'bg-[#0038FF]/10 text-[#0038FF] border border-[#0038FF]/20'
+                        : 'bg-amber-50 text-amber-700 border border-amber-200'
+                    }`}>
+                      {po.status === 'Dispatched' && <Truck className="w-3 h-3" />}
+                      <span>{po.status}</span>
                     </span>
                   </td>
                   <td className="py-3.5 px-4 text-right">
                     <button
                       onClick={() => setSelectedPo(po)}
-                      className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white"
-                      title="Inspect PO"
+                      className="btn-secondary-cyber text-xs py-1 px-3 shadow-none"
                     >
                       <Eye className="w-3.5 h-3.5" />
+                      <span>Inspect</span>
                     </button>
                   </td>
                 </tr>
@@ -148,97 +161,102 @@ export default function PurchaseOrders() {
         </div>
       </div>
 
-      {/* Generate PO Modal */}
+      {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="glass-panel-glow w-full max-w-xl p-6 sm:p-8 rounded-3xl relative animate-in fade-in zoom-in-95">
-            <div className="flex justify-between items-center pb-4 border-b border-white/10 mb-5">
-              <div>
-                <span className="text-[10px] font-mono text-[#FF5E1E] uppercase tracking-wider block">DISPATCH WORKFLOW</span>
-                <h3 className="font-display text-xl font-bold text-white">Generate Purchase Order</h3>
-              </div>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white">
-                <X className="w-5 h-5" />
-              </button>
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative animate-in fade-in zoom-in-95">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-5 right-5 p-2 rounded-full text-slate-400 hover:text-slate-900 hover:bg-slate-100"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="mb-6">
+              <span className="text-[10px] font-mono text-[#0038FF] bg-[#0038FF]/10 px-2 py-0.5 rounded-full border border-[#0038FF]/20 font-bold uppercase">
+                PURCHASE ORDER ENGINE
+              </span>
+              <h2 className="font-display text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+                Generate PO to Vendor
+              </h2>
             </div>
 
-            <form onSubmit={handleCreate} className="space-y-4">
+            <form onSubmit={handleCreate} className="space-y-4 text-xs">
               <div>
-                <label className="block text-xs font-mono text-slate-300 mb-1 uppercase">PO Title / Scope *</label>
+                <label className="block text-slate-700 font-bold mb-1">Purchase Order Description *</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Workstation NVMe Storage Batch"
+                  placeholder="e.g. Enterprise Tier GPU Compute Deployment"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs focus:outline-none focus:border-[#FF5E1E]"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-[#0038FF]"
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-mono text-slate-300 mb-1 uppercase">Contracted Supplier</label>
+                  <label className="block text-slate-700 font-bold mb-1">Approved Requisition Ref</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.reqId}
+                    onChange={(e) => setFormData({ ...formData, reqId: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 font-mono focus:outline-none focus:border-[#0038FF]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Supplier Entity</label>
                   <select
                     value={formData.supplierName}
                     onChange={(e) => setFormData({ ...formData, supplierName: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs focus:outline-none focus:border-[#FF5E1E]"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-[#0038FF]"
                   >
                     {suppliers.map(s => (
                       <option key={s.id} value={s.name}>{s.name}</option>
                     ))}
                   </select>
                 </div>
-
-                <div>
-                  <label className="block text-xs font-mono text-slate-300 mb-1 uppercase">Requisition Ref</label>
-                  <input
-                    type="text"
-                    value={formData.reqId}
-                    onChange={(e) => setFormData({ ...formData, reqId: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs focus:outline-none focus:border-[#FF5E1E]"
-                  />
-                </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-mono text-slate-300 mb-1 uppercase">Total Cost Amount (USD) *</label>
+                  <label className="block text-slate-700 font-bold mb-1">Total PO Amount ($) *</label>
                   <input
                     type="number"
                     required
                     min="1"
-                    placeholder="18000"
+                    placeholder="e.g. 52000"
                     value={formData.totalAmount}
                     onChange={(e) => setFormData({ ...formData, totalAmount: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs focus:outline-none focus:border-[#FF5E1E]"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 font-mono focus:outline-none focus:border-[#0038FF]"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-xs font-mono text-slate-300 mb-1 uppercase">Target Delivery Date</label>
+                  <label className="block text-slate-700 font-bold mb-1">Expected Delivery Date</label>
                   <input
                     type="date"
                     value={formData.deliveryDate}
                     onChange={(e) => setFormData({ ...formData, deliveryDate: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs focus:outline-none focus:border-[#FF5E1E]"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 font-mono focus:outline-none focus:border-[#0038FF]"
                   />
                 </div>
               </div>
 
-              <div className="pt-2 flex justify-end gap-3">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-white/5 text-slate-300 hover:text-white text-xs font-mono"
+                  className="btn-secondary-cyber text-xs py-2 px-4"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-orange text-xs py-2 px-6"
+                  className="btn-primary-cyber text-xs py-2 px-5"
                 >
-                  {loading ? 'Generating...' : 'Issue Purchase Order'}
+                  {loading ? 'Generating...' : 'Issue Purchase Order &rarr;'}
                 </button>
               </div>
             </form>
@@ -246,52 +264,55 @@ export default function PurchaseOrders() {
         </div>
       )}
 
-      {/* PO Detail View Modal */}
+      {/* Inspect PO Modal */}
       {selectedPo && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="glass-panel-glow w-full max-w-lg p-6 sm:p-8 rounded-3xl relative animate-in fade-in zoom-in-95 space-y-5">
-            <div className="flex justify-between items-start pb-4 border-b border-white/10">
-              <div>
-                <span className="text-[10px] font-mono text-[#FF5E1E] uppercase tracking-wider block">{selectedPo.id}</span>
-                <h3 className="font-display text-xl font-bold text-white">{selectedPo.title}</h3>
-              </div>
-              <button onClick={() => setSelectedPo(null)} className="text-slate-400 hover:text-white">
-                <X className="w-5 h-5" />
-              </button>
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative animate-in fade-in zoom-in-95">
+            <button
+              onClick={() => setSelectedPo(null)}
+              className="absolute top-5 right-5 p-2 rounded-full text-slate-400 hover:text-slate-900 hover:bg-slate-100"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="mb-4">
+              <span className="text-[10px] font-mono text-[#0038FF] bg-[#0038FF]/10 px-2 py-0.5 rounded-full border border-[#0038FF]/20 font-bold">
+                PURCHASE ORDER VOUCHER // {selectedPo.id}
+              </span>
+              <h2 className="font-display text-xl font-bold text-slate-900 mt-1">
+                {selectedPo.title}
+              </h2>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 text-xs font-mono">
-              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                <span className="text-slate-400 block text-[10px]">SUPPLIER</span>
-                <span className="text-white font-bold">{selectedPo.supplierName}</span>
+            <div className="space-y-3 p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-mono mb-5">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Assigned Vendor:</span>
+                <span className="font-bold text-slate-900">{selectedPo.supplierName}</span>
               </div>
-              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                <span className="text-slate-400 block text-[10px]">TOTAL AMOUNT</span>
-                <span className="text-[#00F0FF] font-bold text-sm">${Number(selectedPo.totalAmount).toLocaleString()}</span>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Origin Requisition:</span>
+                <span className="font-bold text-[#0038FF]">{selectedPo.reqId}</span>
               </div>
-              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                <span className="text-slate-400 block text-[10px]">FULFILLMENT</span>
-                <span className="text-emerald-400 font-bold">{selectedPo.status}</span>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Total Purchase Value:</span>
+                <span className="font-bold text-slate-900">${Number(selectedPo.totalAmount).toLocaleString()}</span>
               </div>
-              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                <span className="text-slate-400 block text-[10px]">TARGET DELIVERY</span>
-                <span className="text-white">{selectedPo.deliveryDate}</span>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Delivery SLA:</span>
+                <span className="font-bold text-slate-900">{selectedPo.deliveryDate}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Fulfillment State:</span>
+                <span className="font-bold text-emerald-600">{selectedPo.status}</span>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/5 text-xs font-mono flex items-center justify-between">
-              <span className="text-slate-400">Payment Status:</span>
-              <span className="text-white font-bold">{selectedPo.paymentStatus}</span>
-            </div>
-
-            <div className="pt-2 flex justify-end">
-              <button
-                onClick={() => setSelectedPo(null)}
-                className="px-5 py-2 rounded-xl bg-white/10 text-white text-xs font-mono hover:bg-white/20"
-              >
-                Close
-              </button>
-            </div>
+            <button
+              onClick={() => setSelectedPo(null)}
+              className="btn-primary-cyber text-xs py-2 px-5 w-full justify-center"
+            >
+              Close Voucher &rarr;
+            </button>
           </div>
         </div>
       )}

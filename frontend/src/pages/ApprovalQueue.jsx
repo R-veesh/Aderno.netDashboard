@@ -36,76 +36,90 @@ export default function ApprovalQueue() {
     <div className="space-y-8">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] font-mono text-[#00F0FF] bg-[#00F0FF]/10 px-2 py-0.5 rounded border border-[#00F0FF]/30 font-bold uppercase">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="text-xs font-mono text-[#0038FF] bg-[#0038FF]/10 px-3 py-0.5 rounded-full border border-[#0038FF]/20 font-bold uppercase tracking-wider">
               MODULE 06
             </span>
-            <span className="text-xs font-mono text-slate-400">PENDING AUDIT: {requests.length} ITEMS</span>
+            <span className="text-xs font-mono text-slate-500">PENDING AUDIT: {requests.length} ITEMS</span>
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white">
+          <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             Procurement Approval Queue & Governance
           </h1>
+          <p className="text-xs sm:text-sm text-slate-600 mt-1">
+            Multilevel signoff controls and cryptographic audit log for high-value procurement requests.
+          </p>
         </div>
 
-        <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-xs font-mono flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          <span className="text-slate-300">Authorized Signoff: <strong className="text-white">{currentUser.role}</strong></span>
+        <div className="p-2.5 rounded-2xl bg-white border border-slate-200 shadow-xs text-xs font-mono flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-emerald-600" />
+          <span className="text-slate-600">Authorized Signoff: <strong className="text-slate-900">{currentUser.role}</strong></span>
         </div>
       </div>
 
       {/* Pending Items */}
       <div className="space-y-4">
-        <h2 className="font-display text-lg font-bold text-white flex items-center gap-2">
-          <Clock className="w-4 h-4 text-amber-400" />
-          <span>Awaiting Authorization Signoff</span>
+        <h2 className="font-display text-lg font-bold text-slate-900 flex items-center gap-2">
+          <Clock className="w-5 h-5 text-[#FF5E1E]" />
+          <span>Pending Approver Attention</span>
         </h2>
 
         {requests.length === 0 ? (
-          <div className="glass-panel p-8 rounded-2xl text-center text-slate-400 font-mono text-xs">
-            Zero pending requisitions requiring your approval tier.
+          <div className="glass-panel p-8 text-center rounded-2xl">
+            <span className="text-emerald-600 font-mono text-sm font-bold block mb-1">
+              ✓ All Approvals Cleared
+            </span>
+            <p className="text-xs text-slate-500">No requisitions currently awaiting signoff in your authorization queue.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4">
+          <div className="space-y-3">
             {requests.map((r) => (
-              <div key={r.id} className="glass-panel-glow p-5 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div 
+                key={r.id} 
+                className="glass-panel p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 border-l-4 border-l-[#FF5E1E] hover:shadow-md transition-shadow"
+              >
                 <div className="space-y-1">
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono text-xs font-bold text-[#FF5E1E]">{r.id}</span>
-                    <span className="text-xs text-slate-400 font-mono">[{r.department}]</span>
-                    <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
-                      r.priority === 'High' || r.priority === 'Urgent' ? 'bg-red-500/20 text-red-400' : 'bg-slate-700/30 text-slate-300'
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-bold text-[#0038FF]">{r.id}</span>
+                    <span className="text-xs text-slate-400">•</span>
+                    <span className="text-xs font-bold text-slate-900">{r.title}</span>
+                    <span className={`px-2 py-0.5 rounded-full font-mono text-[10px] font-bold ${
+                      r.priority === 'Critical' ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
                     }`}>
-                      {r.priority} Priority
+                      {r.priority}
                     </span>
                   </div>
-                  <h3 className="font-display text-base font-bold text-white">{r.title}</h3>
-                  <p className="text-xs text-slate-300">Requester: <strong className="text-white">{r.requester}</strong> &bull; Estimated Amount: <strong className="text-[#00F0FF]">${Number(r.estimatedCost).toLocaleString()}</strong></p>
+                  <p className="text-xs text-slate-600 leading-relaxed max-w-2xl">{r.description}</p>
+                  <div className="flex items-center gap-4 text-xs font-mono text-slate-500 pt-1">
+                    <span>Department: <strong className="text-slate-800">{r.department}</strong></span>
+                    <span>Requester: <strong className="text-slate-800">{r.requester}</strong></span>
+                    <span>Est. Cost: <strong className="text-slate-900 font-bold">${Number(r.estimatedCost).toLocaleString()}</strong></span>
+                  </div>
                 </div>
 
                 {canApprove ? (
-                  <div className="flex items-center gap-3 self-end md:self-auto">
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => handleDecision(r.id, 'Approved')}
+                      disabled={loading}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-colors"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Approve</span>
+                    </button>
                     <button
                       onClick={() => handleDecision(r.id, 'Rejected')}
                       disabled={loading}
-                      className="px-4 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/30 text-xs font-mono font-bold flex items-center gap-1.5"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-xs transition-colors"
                     >
                       <X className="w-3.5 h-3.5" />
                       <span>Reject</span>
                     </button>
-                    <button
-                      onClick={() => handleDecision(r.id, 'Approved')}
-                      disabled={loading}
-                      className="px-5 py-2 rounded-xl bg-emerald-500 text-black hover:bg-emerald-400 text-xs font-mono font-bold flex items-center gap-1.5"
-                    >
-                      <Check className="w-3.5 h-3.5" />
-                      <span>Authorize Signoff</span>
-                    </button>
                   </div>
                 ) : (
-                  <span className="text-xs font-mono text-slate-400 bg-white/5 px-3 py-1.5 rounded-lg">
-                    Signoff restricted to Managers & Finance
+                  <span className="text-xs font-mono text-slate-400 italic">
+                    Requires Admin/Finance Signoff
                   </span>
                 )}
               </div>
@@ -114,45 +128,30 @@ export default function ApprovalQueue() {
         )}
       </div>
 
-      {/* Historical Audit Trail */}
-      <div className="glass-panel p-6 sm:p-7 rounded-3xl space-y-4">
-        <h2 className="font-display text-lg font-bold text-white flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          <span>Historical Governance Audit Log</span>
+      {/* Historical Audit Logs */}
+      <div className="glass-panel p-6 rounded-2xl space-y-4">
+        <h2 className="font-display text-lg font-bold text-slate-900">
+          Governance & Decision Audit Trail
         </h2>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs font-mono">
-            <thead>
-              <tr className="bg-[#05070B] border-b border-white/10 text-slate-400">
-                <th className="py-3 px-4">LOG_ID</th>
-                <th className="py-3 px-4">REQUISITION</th>
-                <th className="py-3 px-4">ACTION</th>
-                <th className="py-3 px-4">ACTOR / AUTHORIZER</th>
-                <th className="py-3 px-4">AUDIT COMMENTARY</th>
-                <th className="py-3 px-4 text-right">TIMESTAMP</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5 text-slate-300">
-              {logs.map((l) => (
-                <tr key={l.id} className="hover:bg-white/[0.02]">
-                  <td className="py-3.5 px-4 font-bold text-slate-400">{l.id}</td>
-                  <td className="py-3.5 px-4 font-bold text-[#FF5E1E]">{l.reqId}</td>
-                  <td className="py-3.5 px-4">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                      l.action === 'Approved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' :
-                      'bg-red-500/10 text-red-400 border border-red-500/30'
-                    }`}>
-                      {l.action}
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-4 text-white">{l.actor}</td>
-                  <td className="py-3.5 px-4 text-slate-400 font-sans max-w-sm truncate">{l.comment}</td>
-                  <td className="py-3.5 px-4 text-right text-slate-400">{l.timestamp}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        
+        <div className="space-y-3 font-mono text-xs">
+          {logs.map((log) => (
+            <div key={log.id} className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-3">
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                  log.action === 'Approved' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'
+                }`}>
+                  {log.action}
+                </span>
+                <span className="font-bold text-[#0038FF]">{log.requestId}</span>
+                <span className="text-slate-700">{log.approver}</span>
+              </div>
+              <div className="flex items-center gap-4 text-slate-500 text-[11px]">
+                <span className="italic">{log.notes}</span>
+                <span className="text-slate-400">{log.timestamp}</span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 

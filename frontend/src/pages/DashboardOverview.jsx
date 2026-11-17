@@ -52,30 +52,33 @@ export default function DashboardOverview() {
     <div className="space-y-8">
       
       {/* Top Banner Greeting */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] font-mono text-[#00F0FF] uppercase tracking-wider bg-[#00F0FF]/10 px-2 py-0.5 rounded border border-[#00F0FF]/30">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="text-xs font-mono font-bold text-[#0038FF] uppercase tracking-wider bg-[#0038FF]/10 px-3 py-1 rounded-full border border-[#0038FF]/20">
               {currentUser.role} View
             </span>
-            <span className="text-xs font-mono text-slate-400">SESSION ID: #ADR-2026-9041</span>
+            <span className="text-xs font-mono text-slate-500">SESSION ID: #ADR-2026-9041</span>
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white">
+          <h1 className="font-display text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
             Procurement Intelligence Command
           </h1>
+          <p className="text-xs sm:text-sm text-slate-600 mt-1">
+            Real-time spend orchestration, dynamic budget guardrails, and automated supplier intelligence.
+          </p>
         </div>
 
         <div className="flex items-center gap-3">
           <Link
             to="/ai-intelligence"
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-mono text-slate-300 hover:border-[#00F0FF] hover:text-[#00F0FF] transition-all"
+            className="btn-secondary-cyber text-xs py-2 px-4"
           >
-            <Sparkles className="w-3.5 h-3.5 text-[#00F0FF]" />
+            <Sparkles className="w-3.5 h-3.5 text-[#0038FF]" />
             <span>AI Copilot Active ({anomalies.length} Flags)</span>
           </Link>
           <Link
             to="/requests"
-            className="btn-orange text-xs py-2 px-4 shadow-lg shadow-[#FF5E1E]/20"
+            className="btn-primary-cyber text-xs py-2 px-5"
           >
             <span>+ Create Requisition</span>
           </Link>
@@ -86,111 +89,134 @@ export default function DashboardOverview() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* KPI 1: Total Spent */}
-        <div className="glass-panel p-5 rounded-2xl relative border-t-2 border-t-[#FF5E1E]">
+        <div className="glass-panel p-5 rounded-2xl relative border-t-4 border-t-[#0038FF] hover:shadow-md transition-shadow">
           <div className="flex justify-between items-center mb-3">
-            <span className="text-xs font-mono text-slate-400 tracking-wider">TOTAL SPENT YTD</span>
-            <div className="w-8 h-8 rounded-lg bg-[#FF5E1E]/10 text-[#FF5E1E] flex items-center justify-center">
+            <span className="text-xs font-mono font-bold text-slate-500 tracking-wider">TOTAL SPENT YTD</span>
+            <div className="w-8 h-8 rounded-lg bg-[#0038FF]/10 text-[#0038FF] flex items-center justify-center">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
-          <div className="font-display text-2xl sm:text-3xl font-bold text-white mb-1">
+          <div className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 mb-1">
             ${(totalSpent).toLocaleString()}
           </div>
-          <div className="flex items-center gap-1.5 text-xs">
-            <span className="text-emerald-400 font-mono flex items-center font-bold">
-              <ArrowUpRight className="w-3.5 h-3.5" /> 8.4%
+          <div className="flex items-center gap-1.5 text-xs text-slate-600">
+            <span className="text-emerald-600 font-mono flex items-center font-bold">
+              <ArrowUpRight className="w-3.5 h-3.5" /> +14.2%
             </span>
-            <span className="text-slate-400 font-sans">Budget Cap: ${(totalAllocated).toLocaleString()}</span>
+            <span>vs previous fiscal cycle</span>
           </div>
         </div>
 
-        {/* KPI 2: Budget Utilization */}
-        <div className="glass-panel p-5 rounded-2xl relative border-t-2 border-t-[#00F0FF]">
+        {/* KPI 2: Budget Allocated */}
+        <div className="glass-panel p-5 rounded-2xl relative border-t-4 border-t-emerald-500 hover:shadow-md transition-shadow">
           <div className="flex justify-between items-center mb-3">
-            <span className="text-xs font-mono text-slate-400 tracking-wider">BUDGET UTILIZATION</span>
-            <div className="w-8 h-8 rounded-lg bg-[#00F0FF]/10 text-[#00F0FF] flex items-center justify-center">
+            <span className="text-xs font-mono font-bold text-slate-500 tracking-wider">BUDGET ALLOCATED</span>
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
               <PieChart className="w-4 h-4" />
             </div>
           </div>
-          <div className="font-display text-2xl sm:text-3xl font-bold text-white mb-1">
-            {utilizationPct}%
+          <div className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 mb-1">
+            ${(totalAllocated).toLocaleString()}
           </div>
-          <div className="w-full h-1.5 rounded-full bg-slate-800 mt-2 overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-[#00F0FF] to-[#3B82F6] rounded-full" style={{ width: `${utilizationPct}%` }}></div>
+          <div className="w-full bg-slate-100 rounded-full h-1.5 mt-2 mb-1.5 overflow-hidden">
+            <div 
+              className="bg-[#0038FF] h-1.5 rounded-full transition-all duration-500"
+              style={{ width: `${Math.min(utilizationPct, 100)}%` }}
+            />
+          </div>
+          <div className="text-xs font-mono text-slate-500 flex justify-between">
+            <span>Utilization:</span>
+            <span className="font-bold text-slate-900">{utilizationPct}% Cap Reached</span>
           </div>
         </div>
 
-        {/* KPI 3: Supplier Rating */}
-        <div className="glass-panel p-5 rounded-2xl relative border-t-2 border-t-emerald-400">
+        {/* KPI 3: Requisitions in Pipe */}
+        <div className="glass-panel p-5 rounded-2xl relative border-t-4 border-t-[#FF5E1E] hover:shadow-md transition-shadow">
           <div className="flex justify-between items-center mb-3">
-            <span className="text-xs font-mono text-slate-400 tracking-wider">SUPPLIER RELIABILITY</span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+            <span className="text-xs font-mono font-bold text-slate-500 tracking-wider">REQUISITIONS</span>
+            <div className="w-8 h-8 rounded-lg bg-[#FF5E1E]/10 text-[#FF5E1E] flex items-center justify-center">
+              <ShoppingBag className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 mb-1">
+            {requests.length} Requests
+          </div>
+          <div className="flex items-center gap-2 text-xs">
+            <span className="inline-flex items-center gap-1 font-mono font-bold px-2 py-0.5 rounded-full bg-[#FF5E1E]/10 text-[#FF5E1E]">
+              {pendingCount} Pending Signoff
+            </span>
+          </div>
+        </div>
+
+        {/* KPI 4: Active Suppliers */}
+        <div className="glass-panel p-5 rounded-2xl relative border-t-4 border-t-[#00F0FF] hover:shadow-md transition-shadow">
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-xs font-mono font-bold text-slate-500 tracking-wider">SUPPLIER REGISTRY</span>
+            <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">
               <Users className="w-4 h-4" />
             </div>
           </div>
-          <div className="font-display text-2xl sm:text-3xl font-bold text-white mb-1">
-            96.2%
+          <div className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 mb-1">
+            {suppliers.length} Certified
           </div>
-          <div className="text-xs text-slate-400 flex items-center gap-1">
-            <span className="text-emerald-400 font-mono font-medium">{suppliers.length} Active</span>
-            <span>Registered Vendors</span>
-          </div>
-        </div>
-
-        {/* KPI 4: Pending Approvals */}
-        <div className="glass-panel p-5 rounded-2xl relative border-t-2 border-t-amber-400">
-          <div className="flex justify-between items-center mb-3">
-            <span className="text-xs font-mono text-slate-400 tracking-wider">PENDING APPROVALS</span>
-            <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
-              <Clock className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="font-display text-2xl sm:text-3xl font-bold text-white mb-1">
-            {pendingCount} Requisitions
-          </div>
-          <div className="text-xs text-amber-400 font-mono flex items-center gap-1">
-            <AlertTriangle className="w-3.5 h-3.5" />
-            <span>Requires signoff</span>
+          <div className="flex items-center gap-1.5 text-xs text-slate-600">
+            <span className="text-emerald-600 font-mono font-bold">100% Tax Compliant</span>
+            <span>& SOC-2 audited</span>
           </div>
         </div>
 
       </div>
 
-      {/* Visual Analytics Grid: Spend Burn by Department & Anomaly Highlights */}
+      {/* Main Grid: Departmental Budgets & AI Anomaly Radar */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* Left: Department Spend Burn Progress */}
-        <div className="lg:col-span-7 glass-panel-glow p-6 sm:p-7 rounded-3xl">
-          <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+        {/* Left Column: Department Spend & Utilization Guardrails (7 Cols) */}
+        <div className="lg:col-span-7 glass-panel p-6 rounded-2xl space-y-5">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200">
             <div>
-              <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest block">FISCAL Q4-2026</span>
-              <h3 className="font-display text-lg font-bold text-white">Departmental Budget Allocation</h3>
+              <h2 className="font-display text-lg font-bold text-slate-900">
+                Departmental Budget Guardrails
+              </h2>
+              <p className="text-xs text-slate-500">Live spend allocation vs defined ceiling constraints</p>
             </div>
-            <Link to="/budgets" className="text-xs font-mono text-[#00F0FF] hover:underline">
-              Manage Budgets &rarr;
+            <Link to="/budgets" className="text-xs font-mono text-[#0038FF] font-bold hover:underline flex items-center gap-1">
+              <span>Manage Budgets</span>
+              <ExternalLink className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          <div className="space-y-5">
+          <div className="space-y-4">
             {budgets.map((b) => {
-              const pct = Math.round((b.spent / b.allocated) * 100);
+              const spent = Number(b.spent || 0);
+              const allocated = Number(b.allocated || 0);
+              const pct = allocated > 0 ? Math.round((spent / allocated) * 100) : 0;
+              const isOver = pct >= 90;
+
               return (
-                <div key={b.id} className="space-y-1.5">
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="font-sans font-bold text-slate-200">{b.department}</span>
-                    <span className="font-mono text-slate-400">
-                      <strong className="text-white">${b.spent.toLocaleString()}</strong> / ${b.allocated.toLocaleString()} ({pct}%)
-                    </span>
+                <div key={b.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-slate-300 transition-colors">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <span className="text-xs font-bold text-slate-900">{b.department}</span>
+                      <span className="text-[10px] font-mono text-slate-500 block">Category: {b.category}</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs font-mono font-bold text-slate-900">
+                        ${spent.toLocaleString()} <span className="text-slate-400">/ ${allocated.toLocaleString()}</span>
+                      </span>
+                      <span className={`text-[10px] font-mono font-bold block ${isOver ? 'text-[#FF5E1E]' : 'text-emerald-600'}`}>
+                        {pct}% Allocated
+                      </span>
+                    </div>
                   </div>
-                  <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ${
-                        pct > 90 ? 'bg-red-500' :
-                        pct > 75 ? 'bg-amber-500' :
-                        'bg-gradient-to-r from-[#00F0FF] to-[#3B82F6]'
+
+                  {/* Progress Bar */}
+                  <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                    <div 
+                      className={`h-2 rounded-full transition-all duration-500 ${
+                        isOver ? 'bg-[#FF5E1E]' : 'bg-[#0038FF]'
                       }`}
-                      style={{ width: `${pct}%` }}
-                    ></div>
+                      style={{ width: `${Math.min(pct, 100)}%` }}
+                    />
                   </div>
                 </div>
               );
@@ -198,102 +224,146 @@ export default function DashboardOverview() {
           </div>
         </div>
 
-        {/* Right: AI Anomaly & Fraud Flags */}
-        <div className="lg:col-span-5 glass-panel p-6 sm:p-7 rounded-3xl flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-[#FF5E1E]" />
-                <h3 className="font-display text-lg font-bold text-white">AI Spend Intelligence Flags</h3>
+        {/* Right Column: AI Spend Intelligence Copilot Alerts (5 Cols) */}
+        <div className="lg:col-span-5 glass-panel p-6 rounded-2xl space-y-5">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-[#0038FF]/10 text-[#0038FF] flex items-center justify-center">
+                <Sparkles className="w-4 h-4" />
               </div>
-              <span className="text-[10px] font-mono text-[#FF5E1E] bg-[#FF5E1E]/10 px-2 py-0.5 rounded font-bold">
-                {anomalies.length} ACTIVE
-              </span>
+              <div>
+                <h2 className="font-display text-lg font-bold text-slate-900">
+                  AI Spend Intelligence
+                </h2>
+                <span className="text-[10px] font-mono text-emerald-600 font-bold">ACCELERATED TENSOR SCAN // ACTIVE</span>
+              </div>
             </div>
-
-            <div className="space-y-3">
-              {anomalies.map((a) => (
-                <div key={a.id} className="p-3.5 rounded-xl bg-white/[0.02] border border-white/5 space-y-1.5 hover:border-white/10 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <span className={`text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded ${
-                      a.severity === 'High' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
-                      a.severity === 'Medium' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-                      'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                    }`}>
-                      {a.severity} Severity
-                    </span>
-                    <span className="text-[10px] font-mono text-slate-400">{a.timestamp}</span>
-                  </div>
-                  <h4 className="text-xs font-bold text-white leading-snug">{a.title}</h4>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">{a.details}</p>
-                </div>
-              ))}
-            </div>
+            <Link to="/ai-intelligence" className="text-xs font-mono text-[#0038FF] font-bold hover:underline">
+              View All &rarr;
+            </Link>
           </div>
 
-          <div className="pt-4 mt-4 border-t border-white/10 text-center">
-            <Link to="/ai-intelligence" className="text-xs font-mono text-[#00F0FF] hover:underline flex items-center justify-center gap-1">
-              <span>Access Neural Anomaly Console</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
+          <div className="space-y-3">
+            {anomalies.map((anom) => (
+              <div 
+                key={anom.id} 
+                className="p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#0038FF]/40 transition-colors"
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                    anom.severity === 'Critical' 
+                      ? 'bg-rose-50 text-rose-700 border border-rose-200' 
+                      : anom.severity === 'High' 
+                      ? 'bg-amber-50 text-amber-700 border border-amber-200' 
+                      : 'bg-[#0038FF]/10 text-[#0038FF] border border-[#0038FF]/20'
+                  }`}>
+                    {anom.severity} • {anom.flag}
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-400">Score: {anom.riskScore}/100</span>
+                </div>
+
+                <p className="text-xs text-slate-700 font-medium leading-relaxed mb-2">
+                  {anom.explanation}
+                </p>
+
+                <div className="flex items-center justify-between pt-2 border-t border-slate-200/80 text-[11px] font-mono">
+                  <span className="text-slate-500">Ref: {anom.refId}</span>
+                  <span className="font-bold text-slate-900">${Number(anom.amount).toLocaleString()}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="pt-2 text-center">
+            <Link
+              to="/ai-intelligence"
+              className="btn-primary-cyber text-xs py-2 px-5 w-full justify-center"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Launch Copilot Spend Graph</span>
             </Link>
           </div>
         </div>
 
       </div>
 
-      {/* Recent Procurement Requests Stream */}
-      <div className="glass-panel p-6 sm:p-7 rounded-3xl">
-        <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+      {/* Bottom Section: Recent Procurement Requisitions Table */}
+      <div className="glass-panel p-6 rounded-2xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-200">
           <div>
-            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest block">AUDITED WORKFLOWS</span>
-            <h3 className="font-display text-xl font-bold text-white">Recent Purchase Requests</h3>
+            <h2 className="font-display text-lg font-bold text-slate-900">
+              Recent Procurement Requisitions
+            </h2>
+            <p className="text-xs text-slate-500">Tracking incoming departmental requests, approvals, and order dispatch</p>
           </div>
-          <Link to="/requests" className="text-xs font-mono text-[#00F0FF] hover:underline">
-            View All Requisitions &rarr;
-          </Link>
+
+          <div className="flex items-center gap-3">
+            <Link to="/requests" className="btn-secondary-cyber text-xs py-1.5 px-3.5">
+              <span>View All Requisitions</span>
+            </Link>
+          </div>
         </div>
 
+        {/* Responsive Table */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs font-mono">
+          <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b border-white/10 text-slate-400 pb-3">
-                <th className="py-3 px-3">REQ_ID</th>
-                <th className="py-3 px-3">DEPARTMENT</th>
-                <th className="py-3 px-3">PURCHASE ITEM</th>
-                <th className="py-3 px-3">REQUESTER</th>
-                <th className="py-3 px-3 text-right">EST. COST</th>
-                <th className="py-3 px-3 text-center">PRIORITY</th>
-                <th className="py-3 px-3 text-right">STATUS</th>
+              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-mono text-[11px] font-bold uppercase tracking-wider">
+                <th className="py-3 px-4">REQ ID</th>
+                <th className="py-3 px-4">Description</th>
+                <th className="py-3 px-4">Department</th>
+                <th className="py-3 px-4">Est. Cost</th>
+                <th className="py-3 px-4">Priority</th>
+                <th className="py-3 px-4">Status</th>
+                <th className="py-3 px-4 text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 text-slate-300">
-              {requests.slice(0, 5).map((req) => (
-                <tr key={req.id} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="py-3.5 px-3 font-bold text-[#FF5E1E]">{req.id}</td>
-                  <td className="py-3.5 px-3 text-slate-200">{req.department}</td>
-                  <td className="py-3.5 px-3 font-sans text-white font-medium">{req.title}</td>
-                  <td className="py-3.5 px-3 text-slate-400">{req.requester}</td>
-                  <td className="py-3.5 px-3 text-right font-bold text-white">${Number(req.estimatedCost).toLocaleString()}</td>
-                  <td className="py-3.5 px-3 text-center">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
-                      req.priority === 'Urgent' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
-                      req.priority === 'High' ? 'bg-[#FF5E1E]/20 text-[#FF5E1E] border border-[#FF5E1E]/30' :
-                      'bg-slate-700/40 text-slate-300'
+            <tbody className="divide-y divide-slate-100 font-sans">
+              {requests.slice(0, 6).map((r) => (
+                <tr key={r.id} className="hover:bg-slate-50/80 transition-colors">
+                  <td className="py-3 px-4 font-mono font-bold text-[#0038FF]">
+                    {r.id}
+                  </td>
+                  <td className="py-3 px-4 font-semibold text-slate-900">
+                    {r.title}
+                  </td>
+                  <td className="py-3 px-4 text-slate-600">
+                    {r.department}
+                  </td>
+                  <td className="py-3 px-4 font-mono font-bold text-slate-900">
+                    ${Number(r.estimatedCost || 0).toLocaleString()}
+                  </td>
+                  <td className="py-3 px-4">
+                    <span className={`px-2 py-0.5 rounded-full font-mono text-[10px] font-bold ${
+                      r.priority === 'Critical' 
+                        ? 'bg-rose-50 text-rose-700 border border-rose-200' 
+                        : r.priority === 'High' 
+                        ? 'bg-amber-50 text-amber-700 border border-amber-200' 
+                        : 'bg-slate-100 text-slate-700 border border-slate-200'
                     }`}>
-                      {req.priority}
+                      {r.priority}
                     </span>
                   </td>
-                  <td className="py-3.5 px-3 text-right">
-                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-semibold inline-flex items-center gap-1 ${
-                      req.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' :
-                      req.status === 'Pending Approval' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30' :
-                      req.status === 'Under Review' ? 'bg-[#00F0FF]/10 text-[#00F0FF] border border-[#00F0FF]/30' :
-                      'bg-red-500/10 text-red-400 border border-red-500/30'
+                  <td className="py-3 px-4">
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-mono text-[10px] font-bold ${
+                      r.status === 'Approved' 
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                        : r.status === 'Pending Approval' 
+                        ? 'bg-amber-50 text-amber-700 border border-amber-200' 
+                        : r.status === 'Under Review'
+                        ? 'bg-[#0038FF]/10 text-[#0038FF] border border-[#0038FF]/20'
+                        : 'bg-rose-50 text-rose-700 border border-rose-200'
                     }`}>
-                      {req.status === 'Approved' && <CheckCircle2 className="w-3 h-3" />}
-                      {req.status === 'Pending Approval' && <Clock className="w-3 h-3" />}
-                      {req.status}
+                      {r.status}
                     </span>
+                  </td>
+                  <td className="py-3 px-4 text-right">
+                    <Link
+                      to="/requests"
+                      className="font-mono text-xs text-[#0038FF] font-bold hover:underline"
+                    >
+                      Audit &rarr;
+                    </Link>
                   </td>
                 </tr>
               ))}

@@ -70,9 +70,10 @@ export default function ProcurementRequests() {
   };
 
   const handleStatusChange = async (id, newStatus) => {
-    const comment = prompt(`Enter optional audit comment for setting ${id} to ${newStatus}:`, '');
-    await api.updateRequestStatus(id, newStatus, `${currentUser.name} (${currentUser.role})`, comment || '');
-    if (selectedReq) setSelectedReq(null);
+    setLoading(true);
+    await api.updateRequestStatus(id, newStatus, currentUser.name, `Manual action by ${currentUser.name}`);
+    setLoading(false);
+    setSelectedReq(null);
     loadRequests();
   };
 
@@ -91,22 +92,25 @@ export default function ProcurementRequests() {
     <div className="space-y-6">
       
       {/* Header & New Request Button */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] font-mono text-[#FF5E1E] bg-[#FF5E1E]/10 px-2 py-0.5 rounded border border-[#FF5E1E]/30 font-bold uppercase">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="text-xs font-mono text-[#0038FF] bg-[#0038FF]/10 px-3 py-0.5 rounded-full border border-[#0038FF]/20 font-bold uppercase tracking-wider">
               MODULE 01
             </span>
-            <span className="text-xs font-mono text-slate-400">TOTAL: {requests.length} REQUISITIONS</span>
+            <span className="text-xs font-mono text-slate-500">TOTAL: {requests.length} REQUISITIONS</span>
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white">
+          <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             Procurement Request Management
           </h1>
+          <p className="text-xs sm:text-sm text-slate-600 mt-1">
+            Initiate, track, and approve corporate purchasing requisitions with autonomous audit trails.
+          </p>
         </div>
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="btn-orange text-xs py-2.5 px-5 shadow-lg shadow-[#FF5E1E]/20 self-start sm:self-auto"
+          className="btn-primary-cyber text-xs py-2.5 px-5 self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
           <span>New Purchase Request</span>
@@ -124,17 +128,17 @@ export default function ProcurementRequests() {
             placeholder="Search by REQ code, item description, or requester..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-xl bg-black/40 border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-[#00F0FF]"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0038FF] focus:bg-white transition-all shadow-xs"
           />
         </div>
 
         {/* Status Filter */}
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono text-slate-400 hidden sm:inline">Status:</span>
+          <span className="text-xs font-mono font-bold text-slate-500 hidden sm:inline">Status:</span>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="text-xs font-mono bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#00F0FF]"
+            className="text-xs font-mono bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:border-[#0038FF] focus:bg-white shadow-xs"
           >
             <option value="ALL">All Statuses</option>
             <option value="Pending Approval">Pending Approval</option>
@@ -146,11 +150,11 @@ export default function ProcurementRequests() {
 
         {/* Department Filter */}
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono text-slate-400 hidden sm:inline">Department:</span>
+          <span className="text-xs font-mono font-bold text-slate-500 hidden sm:inline">Department:</span>
           <select
             value={deptFilter}
             onChange={(e) => setDeptFilter(e.target.value)}
-            className="text-xs font-mono bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#00F0FF]"
+            className="text-xs font-mono bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:border-[#0038FF] focus:bg-white shadow-xs"
           >
             <option value="ALL">All Departments</option>
             <option value="Engineering & Technology">Engineering</option>
@@ -163,88 +167,87 @@ export default function ProcurementRequests() {
 
       </div>
 
-      {/* Requests Table */}
-      <div className="glass-panel rounded-2xl overflow-hidden border border-white/10">
+      {/* Requisitions Table */}
+      <div className="glass-panel rounded-2xl overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs font-mono">
+          <table className="w-full text-left text-xs">
             <thead>
-              <tr className="bg-[#05070B] border-b border-white/10 text-slate-400">
-                <th className="py-3 px-4">REQ_ID</th>
-                <th className="py-3 px-4">DEPARTMENT</th>
-                <th className="py-3 px-4">PURCHASE ITEM</th>
-                <th className="py-3 px-4">REQUESTER</th>
-                <th className="py-3 px-4 text-right">EST. COST</th>
-                <th className="py-3 px-4 text-center">PRIORITY</th>
-                <th className="py-3 px-4 text-center">STATUS</th>
-                <th className="py-3 px-4 text-right">ACTIONS</th>
+              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-mono text-[11px] font-bold uppercase tracking-wider">
+                <th className="py-3.5 px-4">REQ ID</th>
+                <th className="py-3.5 px-4">Title & Description</th>
+                <th className="py-3.5 px-4">Department</th>
+                <th className="py-3.5 px-4">Category</th>
+                <th className="py-3.5 px-4">Requester</th>
+                <th className="py-3.5 px-4">Est. Cost</th>
+                <th className="py-3.5 px-4">Priority</th>
+                <th className="py-3.5 px-4">Status</th>
+                <th className="py-3.5 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 text-slate-300">
+            <tbody className="divide-y divide-slate-100 font-sans">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan="8" className="py-8 text-center text-slate-400">
-                    No procurement requests match your filters.
+                  <td colSpan="9" className="py-8 text-center text-slate-400 font-mono">
+                    No procurement requisitions match your criteria.
                   </td>
                 </tr>
               ) : (
-                filtered.map((req) => (
-                  <tr key={req.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="py-3.5 px-4 font-bold text-[#FF5E1E]">{req.id}</td>
-                    <td className="py-3.5 px-4 text-slate-300">{req.department}</td>
-                    <td className="py-3.5 px-4 font-sans text-white font-medium max-w-xs truncate">{req.title}</td>
-                    <td className="py-3.5 px-4 text-slate-400">{req.requester}</td>
-                    <td className="py-3.5 px-4 text-right font-bold text-white">
-                      ${Number(req.estimatedCost).toLocaleString()}
+                filtered.map((r) => (
+                  <tr key={r.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="py-3.5 px-4 font-mono font-bold text-[#0038FF]">
+                      {r.id}
                     </td>
-                    <td className="py-3.5 px-4 text-center">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
-                        req.priority === 'Urgent' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
-                        req.priority === 'High' ? 'bg-[#FF5E1E]/20 text-[#FF5E1E] border border-[#FF5E1E]/30' :
-                        'bg-slate-700/40 text-slate-300'
-                      }`}>
-                        {req.priority}
+                    <td className="py-3.5 px-4 font-medium max-w-xs">
+                      <span className="font-bold text-slate-900 block truncate">{r.title}</span>
+                      <span className="text-[11px] text-slate-500 block truncate">{r.description}</span>
+                    </td>
+                    <td className="py-3.5 px-4 text-slate-700">
+                      {r.department}
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-[10px] border border-slate-200">
+                        {r.category}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 text-center">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-semibold inline-flex items-center gap-1 ${
-                        req.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' :
-                        req.status === 'Pending Approval' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30' :
-                        req.status === 'Under Review' ? 'bg-[#00F0FF]/10 text-[#00F0FF] border border-[#00F0FF]/30' :
-                        'bg-red-500/10 text-red-400 border border-red-500/30'
+                    <td className="py-3.5 px-4">
+                      <span className="font-semibold text-slate-900 block">{r.requester}</span>
+                      <span className="text-[10px] font-mono text-slate-400">{r.requesterEmail}</span>
+                    </td>
+                    <td className="py-3.5 px-4 font-mono font-bold text-slate-900">
+                      ${Number(r.estimatedCost || 0).toLocaleString()}
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <span className={`px-2 py-0.5 rounded-full font-mono text-[10px] font-bold ${
+                        r.priority === 'Critical' 
+                          ? 'bg-rose-50 text-rose-700 border border-rose-200' 
+                          : r.priority === 'High' 
+                          ? 'bg-amber-50 text-amber-700 border border-amber-200' 
+                          : 'bg-slate-100 text-slate-700 border border-slate-200'
                       }`}>
-                        {req.status === 'Approved' && <CheckCircle2 className="w-3 h-3" />}
-                        {req.status === 'Pending Approval' && <Clock className="w-3 h-3" />}
-                        {req.status}
+                        {r.priority}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-mono text-[10px] font-bold ${
+                        r.status === 'Approved' 
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                          : r.status === 'Pending Approval' 
+                          ? 'bg-amber-50 text-amber-700 border border-amber-200' 
+                          : r.status === 'Under Review'
+                          ? 'bg-[#0038FF]/10 text-[#0038FF] border border-[#0038FF]/20'
+                          : 'bg-rose-50 text-rose-700 border border-rose-200'
+                      }`}>
+                        {r.status}
                       </span>
                     </td>
                     <td className="py-3.5 px-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          onClick={() => setSelectedReq(req)}
-                          className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white"
-                          title="View Details"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                        </button>
-                        {canApprove && req.status === 'Pending Approval' && (
-                          <>
-                            <button
-                              onClick={() => handleStatusChange(req.id, 'Approved')}
-                              className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                              title="Approve Request"
-                            >
-                              <Check className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              onClick={() => handleStatusChange(req.id, 'Rejected')}
-                              className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30"
-                              title="Reject Request"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
-                          </>
-                        )}
-                      </div>
+                      <button
+                        onClick={() => setSelectedReq(r)}
+                        className="btn-secondary-cyber text-xs py-1 px-3 shadow-none"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>Inspect</span>
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -254,40 +257,47 @@ export default function ProcurementRequests() {
         </div>
       </div>
 
-      {/* New Request Modal */}
+      {/* Create Requisition Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="glass-panel-glow w-full max-w-xl p-6 sm:p-8 rounded-3xl relative animate-in fade-in zoom-in-95">
-            <div className="flex justify-between items-center pb-4 border-b border-white/10 mb-5">
-              <div>
-                <span className="text-[10px] font-mono text-[#FF5E1E] uppercase tracking-wider block">NEW PROCUREMENT REQUISITION</span>
-                <h3 className="font-display text-xl font-bold text-white">Create Purchase Request</h3>
-              </div>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white">
-                <X className="w-5 h-5" />
-              </button>
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-xl w-full shadow-2xl relative animate-in fade-in zoom-in-95">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-5 right-5 p-2 rounded-full text-slate-400 hover:text-slate-900 hover:bg-slate-100"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="mb-6">
+              <span className="text-[10px] font-mono text-[#0038FF] bg-[#0038FF]/10 px-2 py-0.5 rounded-full border border-[#0038FF]/20 font-bold uppercase">
+                NEW REQUISITION
+              </span>
+              <h2 className="font-display text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+                Create Procurement Request
+              </h2>
+              <p className="text-xs text-slate-500">Requires budget ceiling verification and approver signoff.</p>
             </div>
 
-            <form onSubmit={handleCreate} className="space-y-4">
+            <form onSubmit={handleCreate} className="space-y-4 text-xs">
               <div>
-                <label className="block text-xs font-mono text-slate-300 mb-1 uppercase">Item or Service Title *</label>
+                <label className="block text-slate-700 font-bold mb-1">Item Title / Project Purpose *</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. 5x High-Density SAS Storage Enclosures"
+                  placeholder="e.g. 5x NVIDIA Tensor-Core H100 GPU Nodes"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs focus:outline-none focus:border-[#FF5E1E]"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0038FF] focus:bg-white"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-mono text-slate-300 mb-1 uppercase">Department</label>
+                  <label className="block text-slate-700 font-bold mb-1">Department</label>
                   <select
                     value={formData.department}
                     onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs focus:outline-none focus:border-[#FF5E1E]"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-[#0038FF]"
                   >
                     <option value="Engineering & Technology">Engineering & Technology</option>
                     <option value="Corporate IT">Corporate IT</option>
@@ -298,75 +308,74 @@ export default function ProcurementRequests() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono text-slate-300 mb-1 uppercase">Category</label>
+                  <label className="block text-slate-700 font-bold mb-1">Category</label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs focus:outline-none focus:border-[#FF5E1E]"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-[#0038FF]"
                   >
-                    <option value="Cloud Infrastructure">Cloud Infrastructure</option>
                     <option value="Hardware & IoT">Hardware & IoT</option>
-                    <option value="Software & SaaS">Software & SaaS</option>
+                    <option value="Cloud Infrastructure">Cloud Infrastructure</option>
+                    <option value="SaaS & Tooling">SaaS & Tooling</option>
                     <option value="Professional Services">Professional Services</option>
-                    <option value="Facilities">Facilities</option>
+                    <option value="Office & Facilities">Office & Facilities</option>
                   </select>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-mono text-slate-300 mb-1 uppercase">Estimated Cost (USD) *</label>
+                  <label className="block text-slate-700 font-bold mb-1">Estimated Cost (USD) *</label>
                   <input
                     type="number"
                     required
                     min="1"
-                    placeholder="25000"
+                    placeholder="e.g. 45000"
                     value={formData.estimatedCost}
                     onChange={(e) => setFormData({ ...formData, estimatedCost: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs focus:outline-none focus:border-[#FF5E1E]"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0038FF] focus:bg-white font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono text-slate-300 mb-1 uppercase">Priority Level</label>
+                  <label className="block text-slate-700 font-bold mb-1">Priority Level</label>
                   <select
                     value={formData.priority}
                     onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs focus:outline-none focus:border-[#FF5E1E]"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-[#0038FF]"
                   >
                     <option value="Normal">Normal</option>
                     <option value="High">High</option>
-                    <option value="Urgent">Urgent</option>
-                    <option value="Low">Low</option>
+                    <option value="Critical">Critical</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-slate-300 mb-1 uppercase">Business Justification</label>
+                <label className="block text-slate-700 font-bold mb-1">Technical Justification & Vendor Notes</label>
                 <textarea
                   rows="3"
-                  placeholder="Describe operational need and consequence of delay..."
+                  placeholder="Provide scope, quotes or justification for budget approval..."
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white text-xs focus:outline-none focus:border-[#FF5E1E]"
-                ></textarea>
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0038FF] focus:bg-white"
+                />
               </div>
 
-              <div className="pt-2 flex justify-end gap-3">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-white/5 text-slate-300 hover:text-white text-xs font-mono"
+                  className="btn-secondary-cyber text-xs py-2 px-4"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-orange text-xs py-2 px-6"
+                  className="btn-primary-cyber text-xs py-2 px-5"
                 >
-                  {loading ? 'Submitting...' : 'Submit Requisition'}
+                  {loading ? 'Submitting Requisition...' : 'Submit Requisition &rarr;'}
                 </button>
               </div>
             </form>
@@ -374,59 +383,66 @@ export default function ProcurementRequests() {
         </div>
       )}
 
-      {/* Request Details Modal */}
+      {/* Inspect Requisition Modal */}
       {selectedReq && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="glass-panel-glow w-full max-w-lg p-6 sm:p-8 rounded-3xl relative animate-in fade-in zoom-in-95 space-y-5">
-            <div className="flex justify-between items-start pb-4 border-b border-white/10">
-              <div>
-                <span className="text-[10px] font-mono text-[#00F0FF] uppercase tracking-wider block">{selectedReq.id}</span>
-                <h3 className="font-display text-xl font-bold text-white">{selectedReq.title}</h3>
-              </div>
-              <button onClick={() => setSelectedReq(null)} className="text-slate-400 hover:text-white">
-                <X className="w-5 h-5" />
-              </button>
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative animate-in fade-in zoom-in-95">
+            <button
+              onClick={() => setSelectedReq(null)}
+              className="absolute top-5 right-5 p-2 rounded-full text-slate-400 hover:text-slate-900 hover:bg-slate-100"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="mb-4">
+              <span className="text-[10px] font-mono text-[#0038FF] bg-[#0038FF]/10 px-2 py-0.5 rounded-full border border-[#0038FF]/20 font-bold">
+                AUDIT LOG // {selectedReq.id}
+              </span>
+              <h2 className="font-display text-xl font-bold text-slate-900 mt-1">
+                {selectedReq.title}
+              </h2>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 text-xs font-mono">
-              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                <span className="text-slate-400 block text-[10px]">DEPARTMENT</span>
-                <span className="text-white font-bold">{selectedReq.department}</span>
+            <div className="space-y-3 p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-mono mb-5">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Department:</span>
+                <span className="font-bold text-slate-900">{selectedReq.department}</span>
               </div>
-              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                <span className="text-slate-400 block text-[10px]">ESTIMATED COST</span>
-                <span className="text-[#FF5E1E] font-bold text-sm">${Number(selectedReq.estimatedCost).toLocaleString()}</span>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Estimated Cost:</span>
+                <span className="font-bold text-[#0038FF]">${Number(selectedReq.estimatedCost || 0).toLocaleString()}</span>
               </div>
-              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                <span className="text-slate-400 block text-[10px]">REQUESTER</span>
-                <span className="text-white">{selectedReq.requester}</span>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Requester:</span>
+                <span className="font-bold text-slate-900">{selectedReq.requester}</span>
               </div>
-              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                <span className="text-slate-400 block text-[10px]">STATUS</span>
-                <span className="text-emerald-400 font-bold">{selectedReq.status}</span>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Current Status:</span>
+                <span className="font-bold text-slate-900">{selectedReq.status}</span>
+              </div>
+              <div className="pt-2 border-t border-slate-200 font-sans text-slate-600 leading-relaxed">
+                <span className="font-mono text-slate-400 block text-[10px] uppercase font-bold">Justification Scope:</span>
+                {selectedReq.description}
               </div>
             </div>
-
-            {selectedReq.description && (
-              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/5 text-xs">
-                <span className="text-slate-400 font-mono text-[10px] block mb-1">JUSTIFICATION</span>
-                <p className="text-slate-300 leading-relaxed">{selectedReq.description}</p>
-              </div>
-            )}
 
             {canApprove && selectedReq.status === 'Pending Approval' && (
-              <div className="pt-3 border-t border-white/10 flex justify-end gap-3">
-                <button
-                  onClick={() => handleStatusChange(selectedReq.id, 'Rejected')}
-                  className="px-4 py-2 rounded-xl bg-red-500/10 text-red-400 border border-red-500/30 text-xs font-mono hover:bg-red-500/20"
-                >
-                  Reject Requisition
-                </button>
+              <div className="flex items-center gap-3">
                 <button
                   onClick={() => handleStatusChange(selectedReq.id, 'Approved')}
-                  className="px-5 py-2 rounded-xl bg-emerald-500 text-black font-bold text-xs font-mono hover:bg-emerald-400"
+                  disabled={loading}
+                  className="flex-1 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
                 >
-                  Approve Requisition
+                  <Check className="w-4 h-4" />
+                  <span>Approve Requisition</span>
+                </button>
+                <button
+                  onClick={() => handleStatusChange(selectedReq.id, 'Rejected')}
+                  disabled={loading}
+                  className="flex-1 py-2.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
+                >
+                  <X className="w-4 h-4" />
+                  <span>Reject Request</span>
                 </button>
               </div>
             )}
