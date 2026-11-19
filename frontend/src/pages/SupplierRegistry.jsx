@@ -240,7 +240,7 @@ export default function SupplierRegistry() {
                   <label className="block text-slate-700 font-bold mb-1">Contact Representative</label>
                   <input
                     type="text"
-                    placeholder="e.g. Julian Henderson"
+                    placeholder="Enter contact name"
                     value={formData.contactPerson}
                     onChange={(e) => setFormData({ ...formData, contactPerson: e.target.value })}
                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-[#0038FF]"
@@ -250,7 +250,7 @@ export default function SupplierRegistry() {
                   <label className="block text-slate-700 font-bold mb-1">Representative Email</label>
                   <input
                     type="email"
-                    placeholder="orders@apextensor.com"
+                    placeholder="Enter contact email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-[#0038FF]"

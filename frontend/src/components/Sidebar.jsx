@@ -18,7 +18,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 
 export default function Sidebar({ mobileOpen, setMobileOpen }) {
-  const { currentUser, switchRole, logout } = useAuth();
+  const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
 
   const navLinks = [
@@ -61,22 +61,14 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
                 alt="Aderno Logo" 
                 className="h-9 sm:h-10 w-auto object-contain group-hover:scale-105 transition-transform" 
               />
-              <span className="text-[10px] font-mono bg-[#0038FF]/10 text-[#0038FF] border border-[#0038FF]/20 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
-                APP
-              </span>
             </Link>
           </div>
 
           {/* Navigation Section */}
-          <div className="px-3 pt-3 pb-1 flex items-center justify-between">
+          <div className="px-3 pt-3 pb-1">
             <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-slate-400 px-3">
               PLATFORM NAVIGATION
             </span>
-            {currentUser?.roleKey === 'superadmin' && (
-              <span className="text-[9px] font-mono font-bold bg-[#0038FF]/10 text-[#0038FF] border border-[#0038FF]/20 px-2 py-0.5 rounded-full mr-2">
-                SUPER ADMIN
-              </span>
-            )}
           </div>
 
           <nav className="p-2 space-y-1 overflow-y-auto max-h-[calc(100vh-320px)]">
@@ -137,24 +129,6 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
               <UserCheck className="w-4 h-4 text-emerald-600 shrink-0 ml-1" />
             </div>
           )}
-
-          {/* Quick Role Switcher (For Evaluation & QA) */}
-          <div>
-            <label className="text-[10px] font-mono text-slate-500 uppercase tracking-wider font-bold block mb-1">
-              FAST ROLE SWITCHER
-            </label>
-            <select
-              value={currentUser?.roleKey || 'superadmin'}
-              onChange={(e) => switchRole(e.target.value)}
-              className="w-full text-xs font-mono bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-slate-800 focus:outline-none focus:border-[#0038FF] shadow-xs"
-            >
-              <option value="superadmin">Super Admin: Master Access</option>
-              <option value="admin">Admin: David Vance</option>
-              <option value="procurement">Procurement: Sarah Jenkins</option>
-              <option value="finance">Finance: Marcus Sterling</option>
-              <option value="department">Dept User: Elena Rostova</option>
-            </select>
-          </div>
 
           {/* Actions: Sign Out & External Link */}
           <div className="pt-1 flex items-center justify-between border-t border-slate-200/80">

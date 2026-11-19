@@ -54,12 +54,6 @@ export default function DashboardOverview() {
       {/* Top Banner Greeting */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
         <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="text-xs font-mono font-bold text-[#0038FF] uppercase tracking-wider bg-[#0038FF]/10 px-3 py-1 rounded-full border border-[#0038FF]/20">
-              {currentUser.role} View
-            </span>
-            <span className="text-xs font-mono text-slate-500">SESSION ID: #ADR-2026-9041</span>
-          </div>
           <h1 className="font-display text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
             Procurement Intelligence Command
           </h1>

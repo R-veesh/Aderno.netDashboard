@@ -103,9 +103,6 @@ export default function LoginPage() {
             alt="Aderno Logo" 
             className="h-12 w-auto object-contain group-hover:scale-105 transition-transform" 
           />
-          <span className="text-[10px] font-mono bg-[#0038FF]/10 text-[#0038FF] border border-[#0038FF]/20 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
-            COMMAND CENTER
-          </span>
         </Link>
         <h2 className="mt-4 font-display text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
           Enterprise Authentication
@@ -173,7 +170,7 @@ export default function LoginPage() {
                 <input
                   type="email"
                   required
-                  placeholder="admin@aderno.net"
+                  placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0038FF] focus:bg-white transition-all shadow-xs"
@@ -183,13 +180,10 @@ export default function LoginPage() {
 
             {/* Password Field */}
             <div>
-              <div className="flex items-center justify-between mb-1.5">
+              <div className="mb-1.5">
                 <label className="block text-xs font-bold text-slate-700">
                   Password *
                 </label>
-                <span className="text-[10px] font-mono text-slate-400">
-                  Firebase Encrypted
-                </span>
               </div>
               <div className="relative">
                 <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -242,7 +236,7 @@ export default function LoginPage() {
                 </>
               ) : (
                 <>
-                  <span>Sign In to Command Center</span>
+                  <span>Sign In</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}

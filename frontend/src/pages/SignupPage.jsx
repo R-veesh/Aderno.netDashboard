@@ -116,15 +116,12 @@ export default function SignupPage() {
             alt="Aderno Logo" 
             className="h-12 w-auto object-contain group-hover:scale-105 transition-transform" 
           />
-          <span className="text-[10px] font-mono bg-[#0038FF]/10 text-[#0038FF] border border-[#0038FF]/20 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
-            ADMIN ONBOARDING
-          </span>
         </Link>
         <h2 className="mt-4 font-display text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
           Create Enterprise Account
         </h2>
         <p className="mt-1 text-xs text-slate-600 font-sans">
-          Create your Firebase-authenticated operational command center account.
+          Create your enterprise account to access procurement management.
         </p>
       </div>
 
@@ -186,7 +183,7 @@ export default function SignupPage() {
                   <input
                     type="text"
                     required
-                    placeholder="e.g. David Vance"
+                    placeholder="Enter your name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0038FF] focus:bg-white transition-all shadow-xs"
@@ -224,7 +221,7 @@ export default function SignupPage() {
                 <input
                   type="email"
                   required
-                  placeholder="admin@aderno.net"
+                  placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0038FF] focus:bg-white transition-all shadow-xs"
@@ -353,7 +350,7 @@ export default function SignupPage() {
         <p className="mt-6 text-center text-xs text-slate-600">
           Already have an existing account?{' '}
           <Link to="/login" className="font-bold text-[#0038FF] hover:underline">
-            Sign In to Command Center &rarr;
+            Sign In &rarr;
           </Link>
         </p>
 
