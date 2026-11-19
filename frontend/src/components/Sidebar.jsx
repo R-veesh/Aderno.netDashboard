@@ -123,10 +123,16 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
                 )}
                 <div className="leading-tight min-w-0">
                   <span className="text-xs font-bold text-slate-900 block truncate">{currentUser.name}</span>
-                  <span className="text-[10px] font-mono text-slate-500 block truncate">{currentUser.role}</span>
+                  <span className="text-[10px] font-mono text-slate-500 block truncate">{currentUser.email || currentUser.role}</span>
                 </div>
               </div>
-              <UserCheck className="w-4 h-4 text-emerald-600 shrink-0 ml-1" />
+              {currentUser.isDemo ? (
+                <span className="text-[9px] font-mono font-bold bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded uppercase">
+                  DEMO
+                </span>
+              ) : (
+                <UserCheck className="w-4 h-4 text-emerald-600 shrink-0 ml-1" />
+              )}
             </div>
           )}
 

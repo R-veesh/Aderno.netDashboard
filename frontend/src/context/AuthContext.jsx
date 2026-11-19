@@ -91,17 +91,29 @@ function getInitials(name = '') {
 export function AuthProvider({ children }) {
   const [firebaseUser, setFirebaseUser] = useState(null);
   const [currentUser, setCurrentUser] = useState(() => {
+    // Check sessionStorage for demo preview first
+    const demoSession = sessionStorage.getItem('aderno_user');
+    if (demoSession) {
+      try { return JSON.parse(demoSession); } catch {}
+    }
     const saved = localStorage.getItem('aderno_user');
     return saved ? JSON.parse(saved) : null;
   });
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(() => localStorage.getItem('aderno_token') || null);
+  const [token, setToken] = useState(() => {
+    if (sessionStorage.getItem('aderno_demo_mode') === 'true') {
+      return 'demo_preview_session_key';
+    }
+    return localStorage.getItem('aderno_token') || null;
+  });
 
   // Sync with Firebase Auth state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setFirebaseUser(user);
+        sessionStorage.removeItem('aderno_demo_mode');
+        sessionStorage.removeItem('aderno_user');
         const userToken = await user.getIdToken().catch(() => 'firebase_bearer_token');
         setToken(userToken);
         localStorage.setItem('aderno_token', userToken);
@@ -119,18 +131,33 @@ export function AuthProvider({ children }) {
             photoURL: user.photoURL,
             avatar: getInitials(displayName),
             ...SUPER_ADMIN_ROLE,
-            isFirebase: true
+            isFirebase: true,
+            isDemo: false
           };
           localStorage.setItem(`aderno_profile_${user.uid}`, JSON.stringify(profile));
         }
 
         setCurrentUser(profile);
         localStorage.setItem('aderno_user', JSON.stringify(profile));
+
+        // Sync with backend SQLite
+        try {
+          fetch('http://127.0.0.1:8000/api/auth/sync-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: profile.name,
+              email: profile.email,
+              role: profile.role,
+              avatar: profile.avatar
+            })
+          }).catch(() => {});
+        } catch {}
       } else {
         setFirebaseUser(null);
-        // If not using demo bypass, set to null
-        const savedDemo = localStorage.getItem('aderno_demo_active');
-        if (!savedDemo) {
+        // If in session-only demo mode, keep demo session; otherwise clear
+        const isDemo = sessionStorage.getItem('aderno_demo_mode') === 'true';
+        if (!isDemo) {
           setCurrentUser(null);
           setToken(null);
           localStorage.removeItem('aderno_user');
@@ -258,15 +285,29 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Demo Login (for offline or instantaneous preview)
-  const loginDemo = (roleKey = 'superadmin') => {
-    const user = USERS[roleKey] || USERS.superadmin;
-    setCurrentUser(user);
-    setToken('demo_token_authenticated_1.6');
-    localStorage.setItem('aderno_user', JSON.stringify(user));
-    localStorage.setItem('aderno_token', 'demo_token_authenticated_1.6');
-    localStorage.setItem('aderno_demo_active', 'true');
-    return { success: true, user };
+  // Demo View Mode (Showcase only, no real login key generated, not saved permanently)
+  const loginDemo = () => {
+    const demoUser = {
+      id: 'demo-visitor-01',
+      name: 'Demo Visitor',
+      email: 'demo@aderno.net',
+      role: 'Demo Viewer',
+      roleKey: 'demoviewer',
+      department: 'Procurement Intelligence Preview',
+      avatar: 'DV',
+      permissions: ['all'],
+      isDemo: true
+    };
+    setCurrentUser(demoUser);
+    setToken('demo_preview_session_key');
+    // "its not login key its no need to save" -> Save in sessionStorage only, NEVER in localStorage
+    sessionStorage.setItem('aderno_demo_mode', 'true');
+    sessionStorage.setItem('aderno_user', JSON.stringify(demoUser));
+    // Clear any persistent keys
+    localStorage.removeItem('aderno_user');
+    localStorage.removeItem('aderno_token');
+    localStorage.removeItem('aderno_demo_active');
+    return { success: true, user: demoUser };
   };
 
   // Logout
@@ -280,6 +321,8 @@ export function AuthProvider({ children }) {
       localStorage.removeItem('aderno_user');
       localStorage.removeItem('aderno_token');
       localStorage.removeItem('aderno_demo_active');
+      sessionStorage.removeItem('aderno_user');
+      sessionStorage.removeItem('aderno_demo_mode');
     }
   };
 

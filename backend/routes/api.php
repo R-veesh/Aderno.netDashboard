@@ -48,6 +48,68 @@ Route::post('/auth/login', function (Request $request) {
     ]);
 });
 
+Route::post('/auth/register', function (Request $request) {
+    $data = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|min:8',
+        'role' => 'nullable|string'
+    ]);
+
+    $user = User::create([
+        'name' => $data['name'],
+        'email' => $data['email'],
+        'password' => Hash::make($data['password']),
+        'role' => $data['role'] ?? 'Super Administrator',
+        'avatar' => strtoupper(substr($data['name'], 0, 2))
+    ]);
+
+    $token = $user->createToken('aderno_access_token')->plainTextToken;
+
+    return response()->json([
+        'token' => $token,
+        'user' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role' => $user->role,
+            'avatar' => $user->avatar
+        ]
+    ], 201);
+});
+
+Route::post('/auth/sync-user', function (Request $request) {
+    $data = $request->validate([
+        'name' => 'required|string',
+        'email' => 'required|email',
+        'role' => 'nullable|string',
+        'avatar' => 'nullable|string'
+    ]);
+
+    $user = User::updateOrCreate(
+        ['email' => $data['email']],
+        [
+            'name' => $data['name'],
+            'role' => $data['role'] ?? 'Super Administrator',
+            'avatar' => $data['avatar'] ?? strtoupper(substr($data['name'], 0, 2)),
+            'password' => Hash::make('aderno_managed_auth_' . $data['email'])
+        ]
+    );
+
+    $token = $user->createToken('aderno_access_token')->plainTextToken;
+
+    return response()->json([
+        'token' => $token,
+        'user' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role' => $user->role,
+            'avatar' => $user->avatar
+        ]
+    ]);
+});
+
 // Procurement Requests
 Route::get('/procurement-requests', function () {
     return response()->json(ProcurementRequest::with('department')->latest()->get()->map(function ($r) {

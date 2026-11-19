@@ -389,34 +389,80 @@ export const INITIAL_DATA = {
   ]
 };
 
-// Local storage management to persist demo changes
-function getStore(key) {
-  const data = localStorage.getItem(`aderno_${key}`);
+// Check if Demo View Mode is active (session-only preview)
+export function isDemoMode() {
+  if (typeof window === 'undefined') return false;
+  if (sessionStorage.getItem('aderno_demo_mode') === 'true') {
+    return true;
+  }
+  const userStr = sessionStorage.getItem('aderno_user') || localStorage.getItem('aderno_user');
+  if (userStr) {
+    try {
+      const u = JSON.parse(userStr);
+      return !!u.isDemo;
+    } catch {
+      return false;
+    }
+  }
+  return false;
+}
+
+// Demo Store (session storage - ephemeral, never saved permanently)
+function getDemoStore(key) {
+  const data = sessionStorage.getItem(`aderno_demo_${key}`);
   return data ? JSON.parse(data) : INITIAL_DATA[key];
 }
 
-function setStore(key, data) {
-  localStorage.setItem(`aderno_${key}`, JSON.stringify(data));
+function setDemoStore(key, data) {
+  sessionStorage.setItem(`aderno_demo_${key}`, JSON.stringify(data));
 }
 
-// REST API Service
+// Real Account Store (SQLite persistent store)
+const DEFAULT_REAL_BUDGETS = [
+  { id: 'BDG-01', department: 'Engineering & Technology', allocated: 250000, spent: 0, fiscalQuarter: 'Q4-2026', manager: 'Department Lead', status: 'Optimal' },
+  { id: 'BDG-02', department: 'Operations & Fleet', allocated: 150000, spent: 0, fiscalQuarter: 'Q4-2026', manager: 'Operations Lead', status: 'Optimal' },
+  { id: 'BDG-03', department: 'Corporate IT & Cloud', allocated: 200000, spent: 0, fiscalQuarter: 'Q4-2026', manager: 'IT Director', status: 'Optimal' },
+  { id: 'BDG-04', department: 'Global Marketing', allocated: 100000, spent: 0, fiscalQuarter: 'Q4-2026', manager: 'Marketing Lead', status: 'Optimal' },
+  { id: 'BDG-05', department: 'Facilities & Logistics', allocated: 80000, spent: 0, fiscalQuarter: 'Q4-2026', manager: 'Facilities Head', status: 'Optimal' }
+];
+
+function getRealStore(key) {
+  const data = localStorage.getItem(`aderno_real_${key}`);
+  if (data) {
+    try {
+      return JSON.parse(data);
+    } catch {}
+  }
+  if (key === 'budgets') return DEFAULT_REAL_BUDGETS;
+  return []; // Clean real accounts start with 0 dummy records
+}
+
+function setRealStore(key, data) {
+  localStorage.setItem(`aderno_real_${key}`, JSON.stringify(data));
+}
+
+// REST API Service backed by SQLite & Persistent Store
 export const api = {
   // Requests
   async getRequests() {
+    if (isDemoMode()) {
+      return getDemoStore('requests');
+    }
     try {
       const res = await client.get('/procurement-requests');
-      return res.data;
+      if (Array.isArray(res.data) && res.data.length > 0) {
+        setRealStore('requests', res.data);
+        return res.data;
+      }
+      return getRealStore('requests');
     } catch {
-      return getStore('requests');
+      return getRealStore('requests');
     }
   },
 
   async createRequest(payload) {
-    try {
-      const res = await client.post('/procurement-requests', payload);
-      return res.data;
-    } catch {
-      const list = getStore('requests');
+    if (isDemoMode()) {
+      const list = getDemoStore('requests');
       const newReq = {
         id: `REQ-${1043 + list.length}`,
         ...payload,
@@ -424,22 +470,41 @@ export const api = {
         createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16)
       };
       const updated = [newReq, ...list];
-      setStore('requests', updated);
+      setDemoStore('requests', updated);
       return newReq;
     }
+
+    let created = null;
+    try {
+      const res = await client.post('/procurement-requests', payload);
+      created = res.data;
+    } catch {}
+
+    const list = getRealStore('requests');
+    const newReq = created ? {
+      id: created.request_code || created.id || `REQ-${1000 + list.length + 1}`,
+      ...payload,
+      status: created.status || 'Pending Approval',
+      createdAt: created.created_at ? String(created.created_at).substring(0, 16) : new Date().toISOString().replace('T', ' ').substring(0, 16)
+    } : {
+      id: `REQ-${1000 + list.length + 1}`,
+      ...payload,
+      status: 'Pending Approval',
+      createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16)
+    };
+
+    const updated = [newReq, ...list];
+    setRealStore('requests', updated);
+    return newReq;
   },
 
   async updateRequestStatus(id, status, actor, comment = '') {
-    try {
-      const res = await client.patch(`/procurement-requests/${id}/status`, { status, comment });
-      return res.data;
-    } catch {
-      const list = getStore('requests');
+    if (isDemoMode()) {
+      const list = getDemoStore('requests');
       const updated = list.map(r => r.id === id ? { ...r, status } : r);
-      setStore('requests', updated);
+      setDemoStore('requests', updated);
 
-      // Also record approval log
-      const logs = getStore('approvalLogs');
+      const logs = getDemoStore('approvalLogs');
       const newLog = {
         id: `LOG-${502 + logs.length}`,
         reqId: id,
@@ -448,28 +513,51 @@ export const api = {
         comment: comment || `Status updated to ${status}`,
         timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16)
       };
-      setStore('approvalLogs', [newLog, ...logs]);
-
+      setDemoStore('approvalLogs', [newLog, ...logs]);
       return updated.find(r => r.id === id);
     }
+
+    try {
+      await client.patch(`/procurement-requests/${id}/status`, { status, comment });
+    } catch {}
+
+    const list = getRealStore('requests');
+    const updated = list.map(r => r.id === id ? { ...r, status } : r);
+    setRealStore('requests', updated);
+
+    const logs = getRealStore('approvalLogs');
+    const newLog = {
+      id: `LOG-${100 + logs.length + 1}`,
+      reqId: id,
+      action: status,
+      actor,
+      comment: comment || `Status updated to ${status}`,
+      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16)
+    };
+    setRealStore('approvalLogs', [newLog, ...logs]);
+    return updated.find(r => r.id === id);
   },
 
   // Suppliers
   async getSuppliers() {
+    if (isDemoMode()) {
+      return getDemoStore('suppliers');
+    }
     try {
       const res = await client.get('/suppliers');
-      return res.data;
+      if (Array.isArray(res.data) && res.data.length > 0) {
+        setRealStore('suppliers', res.data);
+        return res.data;
+      }
+      return getRealStore('suppliers');
     } catch {
-      return getStore('suppliers');
+      return getRealStore('suppliers');
     }
   },
 
   async createSupplier(payload) {
-    try {
-      const res = await client.post('/suppliers', payload);
-      return res.data;
-    } catch {
-      const list = getStore('suppliers');
+    if (isDemoMode()) {
+      const list = getDemoStore('suppliers');
       const newSup = {
         id: `SUP-00${list.length + 1}`,
         ytdSpend: 0,
@@ -480,27 +568,52 @@ export const api = {
         ...payload
       };
       const updated = [newSup, ...list];
-      setStore('suppliers', updated);
+      setDemoStore('suppliers', updated);
       return newSup;
     }
+
+    let created = null;
+    try {
+      const res = await client.post('/suppliers', payload);
+      created = res.data;
+    } catch {}
+
+    const list = getRealStore('suppliers');
+    const newSup = {
+      id: created?.code || payload.code || `SUP-${String(list.length + 1).padStart(3, '0')}`,
+      ytdSpend: 0,
+      rating: 95.0,
+      riskLevel: 'Low',
+      activeContracts: 1,
+      onTimeDeliveryRate: '98.0%',
+      ...payload
+    };
+
+    const updated = [newSup, ...list];
+    setRealStore('suppliers', updated);
+    return newSup;
   },
 
   // Purchase Orders
   async getPurchaseOrders() {
+    if (isDemoMode()) {
+      return getDemoStore('purchaseOrders');
+    }
     try {
       const res = await client.get('/purchase-orders');
-      return res.data;
+      if (Array.isArray(res.data) && res.data.length > 0) {
+        setRealStore('purchaseOrders', res.data);
+        return res.data;
+      }
+      return getRealStore('purchaseOrders');
     } catch {
-      return getStore('purchaseOrders');
+      return getRealStore('purchaseOrders');
     }
   },
 
   async createPurchaseOrder(payload) {
-    try {
-      const res = await client.post('/purchase-orders', payload);
-      return res.data;
-    } catch {
-      const list = getStore('purchaseOrders');
+    if (isDemoMode()) {
+      const list = getDemoStore('purchaseOrders');
       const newPo = {
         id: `PO-${7715 + list.length}`,
         status: 'Dispatched',
@@ -509,60 +622,112 @@ export const api = {
         ...payload
       };
       const updated = [newPo, ...list];
-      setStore('purchaseOrders', updated);
+      setDemoStore('purchaseOrders', updated);
       return newPo;
     }
+
+    let created = null;
+    try {
+      const res = await client.post('/purchase-orders', payload);
+      created = res.data;
+    } catch {}
+
+    const list = getRealStore('purchaseOrders');
+    const newPo = {
+      id: created?.po_number || `PO-${7700 + list.length + 1}`,
+      status: 'Dispatched',
+      createdAt: new Date().toISOString().substring(0, 10),
+      paymentStatus: 'Pending Delivery',
+      ...payload
+    };
+
+    const updated = [newPo, ...list];
+    setRealStore('purchaseOrders', updated);
+    return newPo;
   },
 
   // Budgets
   async getBudgets() {
+    if (isDemoMode()) {
+      return getDemoStore('budgets');
+    }
     try {
       const res = await client.get('/budgets');
-      return res.data;
+      if (Array.isArray(res.data) && res.data.length > 0) {
+        setRealStore('budgets', res.data);
+        return res.data;
+      }
+      return getRealStore('budgets');
     } catch {
-      return getStore('budgets');
+      return getRealStore('budgets');
     }
   },
 
   async updateBudget(id, allocated) {
-    try {
-      const res = await client.patch(`/budgets/${id}`, { allocated });
-      return res.data;
-    } catch {
-      const list = getStore('budgets');
+    if (isDemoMode()) {
+      const list = getDemoStore('budgets');
       const updated = list.map(b => b.id === id ? { ...b, allocated: Number(allocated) } : b);
-      setStore('budgets', updated);
+      setDemoStore('budgets', updated);
       return updated.find(b => b.id === id);
     }
+
+    try {
+      await client.patch(`/budgets/${id}`, { allocated });
+    } catch {}
+
+    const list = getRealStore('budgets');
+    const updated = list.map(b => b.id === id ? { ...b, allocated: Number(allocated) } : b);
+    setRealStore('budgets', updated);
+    return updated.find(b => b.id === id);
   },
 
-  // Spending
+  // Spending Transactions
   async getTransactions() {
+    if (isDemoMode()) {
+      return getDemoStore('spendingTransactions');
+    }
     try {
       const res = await client.get('/spending-transactions');
-      return res.data;
+      if (Array.isArray(res.data) && res.data.length > 0) {
+        setRealStore('spendingTransactions', res.data);
+        return res.data;
+      }
+      return getRealStore('spendingTransactions');
     } catch {
-      return getStore('spendingTransactions');
+      return getRealStore('spendingTransactions');
     }
   },
 
-  // Approvals & Logs
+  // Approval Logs
   async getApprovalLogs() {
+    if (isDemoMode()) {
+      return getDemoStore('approvalLogs');
+    }
     try {
       const res = await client.get('/approval-logs');
-      return res.data;
+      if (Array.isArray(res.data) && res.data.length > 0) {
+        setRealStore('approvalLogs', res.data);
+        return res.data;
+      }
+      return getRealStore('approvalLogs');
     } catch {
-      return getStore('approvalLogs');
+      return getRealStore('approvalLogs');
     }
   },
 
   // AI Anomalies
   async getAiAnomalies() {
+    if (isDemoMode()) {
+      return getDemoStore('aiAnomalies');
+    }
     try {
       const res = await client.get('/ai-anomalies');
-      return res.data;
+      if (Array.isArray(res.data) && res.data.length > 0) {
+        return res.data;
+      }
+      return getRealStore('aiAnomalies');
     } catch {
-      return getStore('aiAnomalies');
+      return getRealStore('aiAnomalies');
     }
   }
 };

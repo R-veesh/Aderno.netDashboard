@@ -84,8 +84,8 @@ export default function LoginPage() {
     }
   };
 
-  const handleDemoSuperAdmin = () => {
-    loginDemo('superadmin');
+  const handleDemoView = () => {
+    loginDemo();
     navigate('/');
   };
 
@@ -243,16 +243,22 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Quick Demo Bypass (For QA evaluation) */}
-          <div className="mt-5 pt-4 border-t border-slate-100 text-center">
+          {/* Demo View (Explore showcase only, no login key or credentials saved) */}
+          <div className="mt-6 pt-5 border-t border-slate-100 text-center">
+            <div className="text-[11px] text-slate-500 mb-2 font-sans font-medium">
+              Want to preview the dashboard without an account?
+            </div>
             <button
               type="button"
-              onClick={handleDemoSuperAdmin}
-              className="text-xs font-mono text-slate-500 hover:text-[#0038FF] transition-colors inline-flex items-center gap-1.5"
+              onClick={handleDemoView}
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-700 hover:text-[#0038FF] transition-all hover:border-[#0038FF]/40 shadow-xs"
             >
-              <Sparkles className="w-3.5 h-3.5 text-[#0038FF]" />
-              <span>Instant Test Access (Demo Pass)</span>
+              <Sparkles className="w-4 h-4 text-[#0038FF]" />
+              <span>Launch Demo View (Sample Preview)</span>
             </button>
+            <div className="text-[10px] text-slate-400 font-mono mt-1.5">
+              Read-only showcase &bull; No login key &bull; No persistent data saved
+            </div>
           </div>
 
         </div>

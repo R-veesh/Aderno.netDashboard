@@ -16,29 +16,48 @@ import SignupPage from './pages/SignupPage';
 import { useAuth } from './context/AuthContext';
 
 function ProtectedLayout({ mobileOpen, setMobileOpen }) {
+  const { currentUser, logout } = useAuth();
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex selection:bg-[#CCFF00] selection:text-slate-900">
-      {/* Sidebar Navigation */}
-      <Sidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col selection:bg-[#CCFF00] selection:text-slate-900">
+      {/* Demo View Indicator Banner */}
+      {currentUser?.isDemo && (
+        <div className="bg-amber-500/10 border-b border-amber-500/20 px-4 py-2 text-center text-xs text-amber-900 flex items-center justify-center gap-3 z-40 relative">
+          <span className="font-bold uppercase tracking-wider font-mono text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full">
+            DEMO VIEW MODE
+          </span>
+          <span className="hidden sm:inline">Exploring with sample data. No login keys or credentials saved.</span>
+          <button
+            onClick={logout}
+            className="font-bold underline text-[#0038FF] hover:text-[#0038FF]/80 ml-1"
+          >
+            Sign In with Real Account &rarr;
+          </button>
+        </div>
+      )}
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 lg:pl-64">
-        <Header setMobileOpen={setMobileOpen} />
+      <div className="flex-1 flex">
+        {/* Sidebar Navigation */}
+        <Sidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
-          <Routes>
-            <Route path="/" element={<DashboardOverview />} />
-            <Route path="/requests" element={<ProcurementRequests />} />
-            <Route path="/suppliers" element={<SupplierRegistry />} />
-            <Route path="/purchase-orders" element={<PurchaseOrders />} />
-            <Route path="/budgets" element={<BudgetManagement />} />
-            <Route path="/spending" element={<SpendingLedger />} />
-            <Route path="/approvals" element={<ApprovalQueue />} />
-            <Route path="/ai-intelligence" element={<AiIntelligence />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col min-w-0 lg:pl-64">
+          <Header setMobileOpen={setMobileOpen} />
+
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+            <Routes>
+              <Route path="/" element={<DashboardOverview />} />
+              <Route path="/requests" element={<ProcurementRequests />} />
+              <Route path="/suppliers" element={<SupplierRegistry />} />
+              <Route path="/purchase-orders" element={<PurchaseOrders />} />
+              <Route path="/budgets" element={<BudgetManagement />} />
+              <Route path="/spending" element={<SpendingLedger />} />
+              <Route path="/approvals" element={<ApprovalQueue />} />
+              <Route path="/ai-intelligence" element={<AiIntelligence />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </main>
+        </div>
       </div>
     </div>
   );
