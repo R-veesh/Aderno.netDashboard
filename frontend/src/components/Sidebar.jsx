@@ -23,12 +23,12 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
 
   const navLinks = [
     { to: '/', label: 'Command Overview', icon: LayoutDashboard },
-    { to: '/requests', label: 'Procurement Requests', icon: FileText, badge: '6' },
+    { to: '/requests', label: 'Procurement Requests', icon: FileText },
     { to: '/suppliers', label: 'Supplier Registry', icon: Users },
     { to: '/purchase-orders', label: 'Purchase Orders', icon: ShoppingBag },
     { to: '/budgets', label: 'Budget Allocation', icon: PieChart },
     { to: '/spending', label: 'Spending Ledger', icon: Receipt },
-    { to: '/approvals', label: 'Approval Queue', icon: CheckSquare, badge: '3', badgeColor: 'bg-[#FF5E1E] text-white' },
+    { to: '/approvals', label: 'Approval Queue', icon: CheckSquare },
     { to: '/ai-intelligence', label: 'AI Spend Copilot', icon: Sparkles, highlight: true },
     { to: '/settings', label: 'System & Audit Logs', icon: Settings },
   ];

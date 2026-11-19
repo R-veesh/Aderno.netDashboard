@@ -140,9 +140,9 @@ export function AuthProvider({ children }) {
         setCurrentUser(profile);
         localStorage.setItem('aderno_user', JSON.stringify(profile));
 
-        // Sync with backend SQLite
+        // Sync with SQLite backend
         try {
-          fetch('http://127.0.0.1:8000/api/auth/sync-user', {
+          fetch('/api/auth/sync-user', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
