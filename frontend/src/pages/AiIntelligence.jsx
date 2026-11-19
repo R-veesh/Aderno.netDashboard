@@ -55,7 +55,7 @@ export default function AiIntelligence() {
         <button
           onClick={triggerScan}
           disabled={scanning}
-          className="btn-primary-cyber text-xs py-2.5 px-5 self-start sm:self-auto"
+          className="btn-primary-cyber text-xs py-2.5 px-5 w-full sm:w-auto justify-center"
         >
           {scanning ? (
             <>

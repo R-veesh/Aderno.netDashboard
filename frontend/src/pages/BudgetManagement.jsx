@@ -55,7 +55,7 @@ export default function BudgetManagement() {
           </p>
         </div>
 
-        <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-xs text-xs font-mono flex items-center gap-4">
+        <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-xs text-xs font-mono flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-start">
           <div>
             <span className="text-slate-500 text-[10px] uppercase font-bold block">TOTAL CAP</span>
             <span className="text-slate-900 font-extrabold">${totalAllocated.toLocaleString()}</span>

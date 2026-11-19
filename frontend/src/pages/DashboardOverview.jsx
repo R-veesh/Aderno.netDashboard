@@ -54,7 +54,7 @@ export default function DashboardOverview() {
       {/* Top Banner Greeting */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
         <div>
-          <h1 className="font-display text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="font-display text-xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
             Procurement Intelligence Command
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 mt-1">
@@ -62,17 +62,17 @@ export default function DashboardOverview() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
           <Link
             to="/ai-intelligence"
-            className="btn-secondary-cyber text-xs py-2 px-4"
+            className="btn-secondary-cyber text-xs py-2 px-3 sm:px-4 justify-center text-center"
           >
-            <Sparkles className="w-3.5 h-3.5 text-[#0038FF]" />
+            <Sparkles className="w-3.5 h-3.5 text-[#0038FF] shrink-0" />
             <span>AI Copilot Active ({anomalies.length} Flags)</span>
           </Link>
           <Link
             to="/requests"
-            className="btn-primary-cyber text-xs py-2 px-5"
+            className="btn-primary-cyber text-xs py-2 px-4 sm:px-5 justify-center text-center"
           >
             <span>+ Create Requisition</span>
           </Link>
@@ -80,13 +80,13 @@ export default function DashboardOverview() {
       </div>
 
       {/* 4 Core KPI Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         
         {/* KPI 1: Total Spent */}
-        <div className="glass-panel p-5 rounded-2xl relative border-t-4 border-t-[#0038FF] hover:shadow-md transition-shadow">
+        <div className="glass-panel p-4 sm:p-5 rounded-2xl relative border-t-4 border-t-[#0038FF] hover:shadow-md transition-shadow">
           <div className="flex justify-between items-center mb-3">
             <span className="text-xs font-mono font-bold text-slate-500 tracking-wider">TOTAL SPENT YTD</span>
-            <div className="w-8 h-8 rounded-lg bg-[#0038FF]/10 text-[#0038FF] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#0038FF]/10 text-[#0038FF] flex items-center justify-center shrink-0">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
@@ -97,15 +97,15 @@ export default function DashboardOverview() {
             <span className="text-emerald-600 font-mono flex items-center font-bold">
               <ArrowUpRight className="w-3.5 h-3.5" /> +14.2%
             </span>
-            <span>vs previous fiscal cycle</span>
+            <span>vs previous cycle</span>
           </div>
         </div>
 
         {/* KPI 2: Budget Allocated */}
-        <div className="glass-panel p-5 rounded-2xl relative border-t-4 border-t-emerald-500 hover:shadow-md transition-shadow">
+        <div className="glass-panel p-4 sm:p-5 rounded-2xl relative border-t-4 border-t-emerald-500 hover:shadow-md transition-shadow">
           <div className="flex justify-between items-center mb-3">
             <span className="text-xs font-mono font-bold text-slate-500 tracking-wider">BUDGET ALLOCATED</span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
               <PieChart className="w-4 h-4" />
             </div>
           </div>
@@ -118,17 +118,17 @@ export default function DashboardOverview() {
               style={{ width: `${Math.min(utilizationPct, 100)}%` }}
             />
           </div>
-          <div className="text-xs font-mono text-slate-500 flex justify-between">
+          <div className="text-xs font-mono text-slate-500 flex justify-between gap-1 flex-wrap">
             <span>Utilization:</span>
             <span className="font-bold text-slate-900">{utilizationPct}% Cap Reached</span>
           </div>
         </div>
 
         {/* KPI 3: Requisitions in Pipe */}
-        <div className="glass-panel p-5 rounded-2xl relative border-t-4 border-t-[#FF5E1E] hover:shadow-md transition-shadow">
+        <div className="glass-panel p-4 sm:p-5 rounded-2xl relative border-t-4 border-t-[#FF5E1E] hover:shadow-md transition-shadow">
           <div className="flex justify-between items-center mb-3">
             <span className="text-xs font-mono font-bold text-slate-500 tracking-wider">REQUISITIONS</span>
-            <div className="w-8 h-8 rounded-lg bg-[#FF5E1E]/10 text-[#FF5E1E] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#FF5E1E]/10 text-[#FF5E1E] flex items-center justify-center shrink-0">
               <ShoppingBag className="w-4 h-4" />
             </div>
           </div>
@@ -143,10 +143,10 @@ export default function DashboardOverview() {
         </div>
 
         {/* KPI 4: Active Suppliers */}
-        <div className="glass-panel p-5 rounded-2xl relative border-t-4 border-t-[#00F0FF] hover:shadow-md transition-shadow">
+        <div className="glass-panel p-4 sm:p-5 rounded-2xl relative border-t-4 border-t-[#00F0FF] hover:shadow-md transition-shadow">
           <div className="flex justify-between items-center mb-3">
             <span className="text-xs font-mono font-bold text-slate-500 tracking-wider">SUPPLIER REGISTRY</span>
-            <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
               <Users className="w-4 h-4" />
             </div>
           </div>

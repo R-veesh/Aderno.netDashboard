@@ -110,7 +110,7 @@ export default function ProcurementRequests() {
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="btn-primary-cyber text-xs py-2.5 px-5 self-start sm:self-auto"
+          className="btn-primary-cyber text-xs py-2.5 px-5 w-full sm:w-auto justify-center"
         >
           <Plus className="w-4 h-4" />
           <span>New Purchase Request</span>

@@ -52,7 +52,7 @@ export default function ApprovalQueue() {
           </p>
         </div>
 
-        <div className="p-2.5 rounded-2xl bg-white border border-slate-200 shadow-xs text-xs font-mono flex items-center gap-2">
+        <div className="p-2.5 rounded-2xl bg-white border border-slate-200 shadow-xs text-xs font-mono flex items-center gap-2 w-full sm:w-auto">
           <ShieldCheck className="w-4 h-4 text-emerald-600" />
           <span className="text-slate-600">Authorized Signoff: <strong className="text-slate-900">{currentUser.role}</strong></span>
         </div>

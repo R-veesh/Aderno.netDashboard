@@ -35,15 +35,15 @@ function ProtectedLayout({ mobileOpen, setMobileOpen }) {
         </div>
       )}
 
-      <div className="flex-1 flex">
+      <div className="flex-1 flex w-full max-w-full overflow-x-hidden">
         {/* Sidebar Navigation */}
         <Sidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col min-w-0 lg:pl-64">
+        <div className="flex-1 flex flex-col min-w-0 lg:pl-64 w-full max-w-full overflow-x-hidden">
           <Header setMobileOpen={setMobileOpen} />
 
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+          <main className="flex-1 p-3.5 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto overflow-x-hidden">
             <Routes>
               <Route path="/" element={<DashboardOverview />} />
               <Route path="/requests" element={<ProcurementRequests />} />
