@@ -1,5 +1,5 @@
 import React from 'react';
-import { Settings, ShieldCheck, Database, Server, Lock, User, Terminal, LogOut, KeyRound } from 'lucide-react';
+import { Settings, ShieldCheck, Lock, User, KeyRound, LogOut, CheckCircle2, BellRing, Sliders } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -31,7 +31,7 @@ export default function SettingsPage() {
           System Settings & Platform Profile
         </h1>
         <p className="text-xs sm:text-sm text-slate-600 mt-1">
-          Review tenant connection details, Firebase active identity credentials, and cryptographic system environment.
+          Manage administrative credentials, security parameters, and enterprise role permissions.
         </p>
       </div>
 
@@ -75,13 +75,9 @@ export default function SettingsPage() {
                 {firebaseUser ? (firebaseUser.providerData[0]?.providerId || 'Firebase Auth') : 'Enterprise Local Session'}
               </span>
             </div>
-            <div className="flex justify-between py-1.5 border-b border-slate-100 text-slate-600">
-              <span>Tenant Project ID:</span>
-              <span className="text-slate-900 font-bold">aderno-ff9b0</span>
-            </div>
             {currentUser?.id && (
               <div className="flex justify-between py-1.5 border-b border-slate-100 text-slate-600">
-                <span>Subject UID:</span>
+                <span>Account ID / UID:</span>
                 <span className="text-slate-500 font-mono text-[10px] truncate max-w-[170px]">{currentUser.id}</span>
               </div>
             )}
@@ -103,7 +99,7 @@ export default function SettingsPage() {
           <div className="pt-3 border-t border-slate-100">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold font-mono transition-colors"
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold font-mono transition-colors"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Sign Out Session</span>
@@ -111,53 +107,84 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* System & Architecture Info */}
+        {/* Security & System Controls */}
         <div className="lg:col-span-7 space-y-5">
           
+          {/* Security & Governance Controls */}
           <div className="glass-panel p-6 rounded-3xl space-y-4">
             <div className="flex items-center gap-3 pb-3 border-b border-slate-200">
-              <Server className="w-5 h-5 text-[#0038FF]" />
-              <h2 className="font-display text-base font-bold text-slate-900">Topology & Environment Context</h2>
+              <ShieldCheck className="w-5 h-5 text-[#0038FF]" />
+              <h2 className="font-display text-base font-bold text-slate-900">Security & Operational Governance</h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
-                <span className="text-slate-500 text-[10px] uppercase font-bold block">AUTHENTICATION SERVICE</span>
-                <span className="text-slate-900 font-bold">Google Firebase Auth (v11)</span>
-                <span className="text-emerald-600 block text-[10px]">aderno-ff9b0.firebaseapp.com</span>
+            <div className="space-y-3">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <div>
+                  <span className="font-display font-bold text-xs text-slate-900 block">Cryptographic Audit Enforcement</span>
+                  <span className="text-[11px] text-slate-500">Every requisition decision is cryptographically signed and stored with timestamp hash.</span>
+                </div>
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-mono font-bold shrink-0">
+                  Active
+                </span>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
-                <span className="text-slate-500 text-[10px] uppercase font-bold block">FRONTEND ARCHITECTURE</span>
-                <span className="text-slate-900 font-bold">React 19 & Vite 6 (Tailwind v4)</span>
-                <span className="text-emerald-600 block text-[10px]">app.aderno.net SPA Active</span>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <div>
+                  <span className="font-display font-bold text-xs text-slate-900 block">Multilevel Approval Guardrails</span>
+                  <span className="text-[11px] text-slate-500">Enforces two-step verification for purchase requisitions exceeding departmental limits.</span>
+                </div>
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-mono font-bold shrink-0">
+                  Enforced
+                </span>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
-                <span className="text-slate-500 text-[10px] uppercase font-bold block">SERVICE LAYER</span>
-                <span className="text-slate-900 font-bold">PHP 8.2 / REST Controller</span>
-                <span className="text-[#0038FF] block text-[10px]">FastCGI / Nginx Reverse Proxy</span>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <div>
+                  <span className="font-display font-bold text-xs text-slate-900 block">Autonomous Anomaly Detection</span>
+                  <span className="text-[11px] text-slate-500">AI spend copilot automatically flags duplicate manifests and high-variance ledger entries.</span>
+                </div>
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#0038FF]/10 text-[#0038FF] border border-[#0038FF]/20 text-xs font-mono font-bold shrink-0">
+                  Enabled
+                </span>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
-                <span className="text-slate-500 text-[10px] uppercase font-bold block">PUBLIC WEB SHOWCASE</span>
-                <span className="text-slate-900 font-bold">https://aderno.net</span>
-                <span className="text-emerald-600 block text-[10px]">SSL TLS 1.3 Certified</span>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <div>
+                  <span className="font-display font-bold text-xs text-slate-900 block">Session Timeout & Token Refresh</span>
+                  <span className="text-[11px] text-slate-500">Firebase bearer tokens automatically rotate every 60 minutes for security compliance.</span>
+                </div>
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200 text-xs font-mono font-bold shrink-0">
+                  60m TTL
+                </span>
               </div>
             </div>
           </div>
 
-          <div className="glass-panel p-6 rounded-3xl flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <ShieldCheck className="w-6 h-6 text-emerald-600" />
-              <div>
-                <span className="font-display font-bold text-sm text-slate-900 block">Cryptographic Audit Enforcement</span>
-                <span className="text-xs text-slate-500">Every requisition decision is cryptographically signed and stored.</span>
+          {/* Quick Notification Settings */}
+          <div className="glass-panel p-6 rounded-3xl space-y-4">
+            <div className="flex items-center gap-3 pb-3 border-b border-slate-200">
+              <BellRing className="w-5 h-5 text-[#0038FF]" />
+              <h2 className="font-display text-base font-bold text-slate-900">Notification Channels</h2>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <span>Budget Threshold Alerts</span>
+                <span className="text-emerald-600 font-bold">Enabled</span>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <span>Approval Queue Digests</span>
+                <span className="text-emerald-600 font-bold">Enabled</span>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <span>Critical Risk Flags</span>
+                <span className="text-[#FF5E1E] font-bold">Immediate</span>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <span>PO Dispatch Notices</span>
+                <span className="text-emerald-600 font-bold">Active</span>
               </div>
             </div>
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-mono font-bold">
-              Active
-            </span>
           </div>
 
         </div>
