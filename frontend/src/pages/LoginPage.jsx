@@ -111,7 +111,7 @@ export default function LoginPage() {
           Enterprise Authentication
         </h2>
         <p className="mt-1 text-xs text-slate-600 font-sans">
-          Log in with your Super Admin credentials or authorized Google enterprise identity.
+          Log in with your enterprise credentials or authorized Google account.
         </p>
       </div>
 
@@ -122,18 +122,6 @@ export default function LoginPage() {
           {/* Tech Corner HUD Marks */}
           <div className="hud-corner-tl" />
           <div className="hud-corner-br" />
-
-          {/* Super Admin Status Pill */}
-          <div className="mb-5 p-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="font-mono text-slate-500 text-[11px]">ROLE ACCESS:</span>
-              <span className="font-mono font-bold text-[#0038FF] text-[11px]">SUPER ADMIN BASE</span>
-            </div>
-            <span className="text-[10px] font-mono bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-bold border border-emerald-200">
-              SECURE TLS
-            </span>
-          </div>
 
           {/* Error Alert */}
           {error && (
@@ -269,7 +257,7 @@ export default function LoginPage() {
               className="text-xs font-mono text-slate-500 hover:text-[#0038FF] transition-colors inline-flex items-center gap-1.5"
             >
               <Sparkles className="w-3.5 h-3.5 text-[#0038FF]" />
-              <span>Instant Super Admin Test Access (Demo Pass)</span>
+              <span>Instant Test Access (Demo Pass)</span>
             </button>
           </div>
 
@@ -277,9 +265,9 @@ export default function LoginPage() {
 
         {/* Bottom Signup Navigation */}
         <p className="mt-6 text-center text-xs text-slate-600">
-          Need a new Super Admin or Procurement account?{' '}
+          Need a new account?{' '}
           <Link to="/signup" className="font-bold text-[#0038FF] hover:underline">
-            Register Super Admin &rarr;
+            Register Account &rarr;
           </Link>
         </p>
 

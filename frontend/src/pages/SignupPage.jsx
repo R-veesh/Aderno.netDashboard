@@ -121,7 +121,7 @@ export default function SignupPage() {
           </span>
         </Link>
         <h2 className="mt-4 font-display text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-          Super Admin Base Registration
+          Create Enterprise Account
         </h2>
         <p className="mt-1 text-xs text-slate-600 font-sans">
           Create your Firebase-authenticated operational command center account.
@@ -135,17 +135,6 @@ export default function SignupPage() {
           {/* Tech Corner HUD Marks */}
           <div className="hud-corner-tl" />
           <div className="hud-corner-br" />
-
-          {/* Super Admin Privileges Notice */}
-          <div className="mb-5 p-3 rounded-2xl bg-gradient-to-r from-[#0038FF]/5 to-transparent border border-[#0038FF]/20 flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-[#0038FF]" />
-              <span className="font-mono text-slate-700 font-bold text-[11px]">MASTER PRIVILEGES GRANTED</span>
-            </div>
-            <span className="text-[10px] font-mono bg-[#0038FF] text-white px-2 py-0.5 rounded-full font-bold">
-              SUPER ADMIN
-            </span>
-          </div>
 
           {/* Error Alert */}
           {error && (
@@ -346,11 +335,11 @@ export default function SignupPage() {
               {loading ? (
                 <>
                   <Cpu className="w-4 h-4 animate-spin" />
-                  <span>Provisioning Super Admin...</span>
+                  <span>Provisioning Account...</span>
                 </>
               ) : (
                 <>
-                  <span>Create Super Admin Account</span>
+                  <span>Create Account</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
@@ -362,7 +351,7 @@ export default function SignupPage() {
 
         {/* Bottom Login Navigation */}
         <p className="mt-6 text-center text-xs text-slate-600">
-          Already have an existing Super Admin or Department account?{' '}
+          Already have an existing account?{' '}
           <Link to="/login" className="font-bold text-[#0038FF] hover:underline">
             Sign In to Command Center &rarr;
           </Link>
