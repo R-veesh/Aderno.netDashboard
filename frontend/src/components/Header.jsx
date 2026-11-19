@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Menu, Bell, Search, Plus, Sparkles, ExternalLink, Check, AlertCircle } from 'lucide-react';
+import { Menu, Bell, Search, Plus, Sparkles, ExternalLink, Check, AlertCircle, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Header({ setMobileOpen }) {
-  const { currentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
+  const navigate = useNavigate();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   const notifications = [
@@ -12,6 +13,11 @@ export default function Header({ setMobileOpen }) {
     { id: 2, title: 'Budget Threshold Notice', time: '1h ago', type: 'warn', text: 'Global Marketing is at 93.8% utilization' },
     { id: 3, title: 'New Requisition Pending', time: '3h ago', type: 'info', text: 'Alex Vance submitted REQ-1042 for H100 cluster' },
   ];
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   return (
     <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
@@ -32,6 +38,11 @@ export default function Header({ setMobileOpen }) {
           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-mono font-bold text-emerald-700">
             app.aderno.net
           </span>
+          {currentUser?.roleKey === 'superadmin' && (
+            <span className="hidden md:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#0038FF] text-white text-[10px] font-mono font-bold tracking-wider">
+              SUPER ADMIN
+            </span>
+          )}
         </div>
       </div>
 
@@ -91,15 +102,36 @@ export default function Header({ setMobileOpen }) {
         </div>
 
         {/* User Identity Chip */}
-        <div className="hidden md:flex items-center gap-2.5 pl-3 border-l border-slate-200">
-          <div className="text-right leading-tight">
-            <span className="text-xs font-bold text-slate-900 block">{currentUser.name}</span>
-            <span className="text-[10px] font-mono text-slate-500">{currentUser.role}</span>
+        {currentUser && (
+          <div className="hidden sm:flex items-center gap-2.5 pl-3 border-l border-slate-200">
+            <div className="text-right leading-tight">
+              <span className="text-xs font-bold text-slate-900 block truncate max-w-[140px]">{currentUser.name}</span>
+              <span className="text-[10px] font-mono text-slate-500 block truncate max-w-[140px]">{currentUser.role}</span>
+            </div>
+            
+            {currentUser.photoURL ? (
+              <img 
+                src={currentUser.photoURL} 
+                alt={currentUser.name} 
+                className="w-8 h-8 rounded-lg object-cover border border-[#0038FF]/20 shadow-xs" 
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-lg bg-[#0038FF]/10 text-[#0038FF] font-mono font-bold text-xs flex items-center justify-center border border-[#0038FF]/20">
+                {currentUser.avatar || 'SA'}
+              </div>
+            )}
           </div>
-          <div className="w-8 h-8 rounded-lg bg-[#0038FF]/10 text-[#0038FF] font-mono font-bold text-xs flex items-center justify-center border border-[#0038FF]/20">
-            {currentUser.avatar}
-          </div>
-        </div>
+        )}
+
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          title="Sign Out / Lock Session"
+          className="p-2 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 border border-slate-200 hover:border-rose-200 transition-colors"
+          aria-label="Sign Out"
+        >
+          <LogOut className="w-4 h-4" />
+        </button>
 
       </div>
 

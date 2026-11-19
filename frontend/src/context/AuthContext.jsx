@@ -1,8 +1,42 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { 
+  auth, 
+  googleProvider, 
+  signInWithPopup, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  signOut,
+  onAuthStateChanged,
+  updateProfile 
+} from '../services/firebase';
 
 const AuthContext = createContext(null);
 
+export const SUPER_ADMIN_ROLE = {
+  role: 'Super Administrator',
+  roleKey: 'superadmin',
+  department: 'Master Operations & Cloud Governance',
+  permissions: [
+    'all',
+    'super_admin',
+    'approve_requests',
+    'manage_suppliers',
+    'edit_budgets',
+    'manage_users',
+    'audit_access',
+    'ai_copilot_access',
+    'system_controls'
+  ]
+};
+
 export const USERS = {
+  superadmin: {
+    id: 'super-0',
+    name: 'Super Admin',
+    email: 'superadmin@aderno.net',
+    ...SUPER_ADMIN_ROLE,
+    avatar: 'SA'
+  },
   admin: {
     id: 1,
     name: 'David Vance',
@@ -45,44 +79,244 @@ export const USERS = {
   }
 };
 
+function getInitials(name = '') {
+  if (!name) return 'SA';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+}
+
 export function AuthProvider({ children }) {
+  const [firebaseUser, setFirebaseUser] = useState(null);
   const [currentUser, setCurrentUser] = useState(() => {
     const saved = localStorage.getItem('aderno_user');
-    return saved ? JSON.parse(saved) : USERS.admin;
+    return saved ? JSON.parse(saved) : null;
   });
+  const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(() => localStorage.getItem('aderno_token') || null);
 
-  const [token, setToken] = useState(() => {
-    return localStorage.getItem('aderno_token') || 'demo_token_authenticated_1.6';
-  });
+  // Sync with Firebase Auth state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setFirebaseUser(user);
+        const userToken = await user.getIdToken().catch(() => 'firebase_bearer_token');
+        setToken(userToken);
+        localStorage.setItem('aderno_token', userToken);
 
+        // Retrieve existing role or default to Super Admin
+        const savedData = localStorage.getItem(`aderno_profile_${user.uid}`);
+        let profile = savedData ? JSON.parse(savedData) : null;
+
+        if (!profile) {
+          const displayName = user.displayName || user.email?.split('@')[0] || 'Super Administrator';
+          profile = {
+            id: user.uid,
+            name: displayName,
+            email: user.email,
+            photoURL: user.photoURL,
+            avatar: getInitials(displayName),
+            ...SUPER_ADMIN_ROLE,
+            isFirebase: true
+          };
+          localStorage.setItem(`aderno_profile_${user.uid}`, JSON.stringify(profile));
+        }
+
+        setCurrentUser(profile);
+        localStorage.setItem('aderno_user', JSON.stringify(profile));
+      } else {
+        setFirebaseUser(null);
+        // If not using demo bypass, set to null
+        const savedDemo = localStorage.getItem('aderno_demo_active');
+        if (!savedDemo) {
+          setCurrentUser(null);
+          setToken(null);
+          localStorage.removeItem('aderno_user');
+          localStorage.removeItem('aderno_token');
+        }
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Login with Email & Password
+  const loginWithEmail = async (email, password, rememberMe = true) => {
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      const user = cred.user;
+      const userToken = await user.getIdToken();
+      setToken(userToken);
+
+      const savedData = localStorage.getItem(`aderno_profile_${user.uid}`);
+      let profile = savedData ? JSON.parse(savedData) : null;
+
+      if (!profile) {
+        const displayName = user.displayName || email.split('@')[0];
+        profile = {
+          id: user.uid,
+          name: displayName,
+          email: user.email,
+          photoURL: user.photoURL,
+          avatar: getInitials(displayName),
+          ...SUPER_ADMIN_ROLE,
+          isFirebase: true
+        };
+        localStorage.setItem(`aderno_profile_${user.uid}`, JSON.stringify(profile));
+      }
+
+      setCurrentUser(profile);
+      if (rememberMe) {
+        localStorage.setItem('aderno_remember_email', email);
+        localStorage.setItem('aderno_user', JSON.stringify(profile));
+        localStorage.setItem('aderno_token', userToken);
+      } else {
+        localStorage.removeItem('aderno_remember_email');
+        sessionStorage.setItem('aderno_user', JSON.stringify(profile));
+      }
+      localStorage.removeItem('aderno_demo_active');
+      return { success: true, user: profile };
+    } catch (err) {
+      return { success: false, error: err.message, code: err.code };
+    }
+  };
+
+  // Sign up with Email & Password
+  const signupWithEmail = async ({ name, email, password, roleKey = 'superadmin' }) => {
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      const user = cred.user;
+
+      if (name) {
+        await updateProfile(user, { displayName: name }).catch(() => {});
+      }
+
+      const userToken = await user.getIdToken();
+      setToken(userToken);
+
+      const roleConfig = USERS[roleKey] || SUPER_ADMIN_ROLE;
+      const profile = {
+        id: user.uid,
+        name: name || user.email.split('@')[0],
+        email: user.email,
+        photoURL: null,
+        avatar: getInitials(name || user.email),
+        role: roleConfig.role,
+        roleKey: roleConfig.roleKey,
+        department: roleConfig.department,
+        permissions: roleConfig.permissions,
+        isFirebase: true
+      };
+
+      localStorage.setItem(`aderno_profile_${user.uid}`, JSON.stringify(profile));
+      setCurrentUser(profile);
+      localStorage.setItem('aderno_user', JSON.stringify(profile));
+      localStorage.setItem('aderno_token', userToken);
+      localStorage.removeItem('aderno_demo_active');
+
+      return { success: true, user: profile };
+    } catch (err) {
+      return { success: false, error: err.message, code: err.code };
+    }
+  };
+
+  // Login with Google
+  const loginWithGoogle = async () => {
+    try {
+      const cred = await signInWithPopup(auth, googleProvider);
+      const user = cred.user;
+      const userToken = await user.getIdToken();
+      setToken(userToken);
+
+      const savedData = localStorage.getItem(`aderno_profile_${user.uid}`);
+      let profile = savedData ? JSON.parse(savedData) : null;
+
+      if (!profile) {
+        profile = {
+          id: user.uid,
+          name: user.displayName || user.email.split('@')[0],
+          email: user.email,
+          photoURL: user.photoURL,
+          avatar: getInitials(user.displayName || user.email),
+          ...SUPER_ADMIN_ROLE,
+          isFirebase: true
+        };
+        localStorage.setItem(`aderno_profile_${user.uid}`, JSON.stringify(profile));
+      }
+
+      setCurrentUser(profile);
+      localStorage.setItem('aderno_user', JSON.stringify(profile));
+      localStorage.setItem('aderno_token', userToken);
+      localStorage.removeItem('aderno_demo_active');
+
+      return { success: true, user: profile };
+    } catch (err) {
+      return { success: false, error: err.message, code: err.code };
+    }
+  };
+
+  // Demo Login (for offline or instantaneous preview)
+  const loginDemo = (roleKey = 'superadmin') => {
+    const user = USERS[roleKey] || USERS.superadmin;
+    setCurrentUser(user);
+    setToken('demo_token_authenticated_1.6');
+    localStorage.setItem('aderno_user', JSON.stringify(user));
+    localStorage.setItem('aderno_token', 'demo_token_authenticated_1.6');
+    localStorage.setItem('aderno_demo_active', 'true');
+    return { success: true, user };
+  };
+
+  // Logout
+  const logout = async () => {
+    try {
+      await signOut(auth).catch(() => {});
+    } finally {
+      setFirebaseUser(null);
+      setCurrentUser(null);
+      setToken(null);
+      localStorage.removeItem('aderno_user');
+      localStorage.removeItem('aderno_token');
+      localStorage.removeItem('aderno_demo_active');
+    }
+  };
+
+  // Switch role preview
   const switchRole = (roleKey) => {
     if (USERS[roleKey]) {
-      setCurrentUser(USERS[roleKey]);
-      localStorage.setItem('aderno_user', JSON.stringify(USERS[roleKey]));
+      const updated = {
+        ...currentUser,
+        role: USERS[roleKey].role,
+        roleKey: USERS[roleKey].roleKey,
+        department: USERS[roleKey].department,
+        permissions: USERS[roleKey].permissions
+      };
+      setCurrentUser(updated);
+      localStorage.setItem('aderno_user', JSON.stringify(updated));
+      if (firebaseUser) {
+        localStorage.setItem(`aderno_profile_${firebaseUser.uid}`, JSON.stringify(updated));
+      }
     }
-  };
-
-  const login = (email, password) => {
-    const user = Object.values(USERS).find(u => u.email.toLowerCase() === email.toLowerCase());
-    if (user) {
-      setCurrentUser(user);
-      setToken('demo_token_authenticated_1.6');
-      localStorage.setItem('aderno_user', JSON.stringify(user));
-      localStorage.setItem('aderno_token', 'demo_token_authenticated_1.6');
-      return { success: true };
-    }
-    // Default fallback
-    setCurrentUser(USERS.admin);
-    return { success: true };
-  };
-
-  const logout = () => {
-    // For demo convenience, stay in demo mode or reset to default
-    setCurrentUser(USERS.admin);
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, token, switchRole, login, logout, USERS }}>
+    <AuthContext.Provider value={{ 
+      currentUser, 
+      firebaseUser,
+      token, 
+      loading,
+      isAuthenticated: !!currentUser,
+      loginWithEmail, 
+      signupWithEmail, 
+      loginWithGoogle, 
+      loginDemo,
+      logout, 
+      switchRole, 
+      USERS,
+      SUPER_ADMIN_ROLE 
+    }}>
       {children}
     </AuthContext.Provider>
   );

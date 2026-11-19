@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   FileText, 
@@ -11,12 +11,15 @@ import {
   Sparkles, 
   Settings, 
   ExternalLink,
-  UserCheck
+  UserCheck,
+  LogOut,
+  ShieldCheck
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Sidebar({ mobileOpen, setMobileOpen }) {
-  const { currentUser, switchRole } = useAuth();
+  const { currentUser, switchRole, logout } = useAuth();
+  const navigate = useNavigate();
 
   const navLinks = [
     { to: '/', label: 'Command Overview', icon: LayoutDashboard },
@@ -29,6 +32,11 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
     { to: '/ai-intelligence', label: 'AI Spend Copilot', icon: Sparkles, highlight: true },
     { to: '/settings', label: 'System & Audit Logs', icon: Settings },
   ];
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   return (
     <>
@@ -60,13 +68,18 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
           </div>
 
           {/* Navigation Section */}
-          <div className="px-3 pt-3 pb-1">
+          <div className="px-3 pt-3 pb-1 flex items-center justify-between">
             <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-slate-400 px-3">
               PLATFORM NAVIGATION
             </span>
+            {currentUser?.roleKey === 'superadmin' && (
+              <span className="text-[9px] font-mono font-bold bg-[#0038FF]/10 text-[#0038FF] border border-[#0038FF]/20 px-2 py-0.5 rounded-full mr-2">
+                SUPER ADMIN
+              </span>
+            )}
           </div>
 
-          <nav className="p-2 space-y-1 overflow-y-auto max-h-[calc(100vh-270px)]">
+          <nav className="p-2 space-y-1 overflow-y-auto max-h-[calc(100vh-320px)]">
             {navLinks.map((item) => {
               const Icon = item.icon;
               return (
@@ -98,22 +111,32 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
           </nav>
         </div>
 
-        {/* Bottom Section: Active User & Fast Role Switcher */}
+        {/* Bottom Section: Active User & Fast Role Switcher & Logout */}
         <div className="p-4 border-t border-slate-200 space-y-3 bg-[#F8FAFC]">
           
           {/* User Card */}
-          <div className="p-2.5 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[#0038FF]/10 text-[#0038FF] border border-[#0038FF]/20 font-bold font-mono text-xs flex items-center justify-center">
-                {currentUser.avatar}
+          {currentUser && (
+            <div className="p-2.5 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center justify-between">
+              <div className="flex items-center gap-2.5 min-w-0">
+                {currentUser.photoURL ? (
+                  <img 
+                    src={currentUser.photoURL} 
+                    alt={currentUser.name} 
+                    className="w-8 h-8 rounded-lg object-cover border border-[#0038FF]/20 shadow-xs shrink-0" 
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-lg bg-[#0038FF]/10 text-[#0038FF] border border-[#0038FF]/20 font-bold font-mono text-xs flex items-center justify-center shrink-0">
+                    {currentUser.avatar || 'SA'}
+                  </div>
+                )}
+                <div className="leading-tight min-w-0">
+                  <span className="text-xs font-bold text-slate-900 block truncate">{currentUser.name}</span>
+                  <span className="text-[10px] font-mono text-slate-500 block truncate">{currentUser.role}</span>
+                </div>
               </div>
-              <div className="leading-tight">
-                <span className="text-xs font-bold text-slate-900 block">{currentUser.name}</span>
-                <span className="text-[10px] font-mono text-slate-500">{currentUser.role}</span>
-              </div>
+              <UserCheck className="w-4 h-4 text-emerald-600 shrink-0 ml-1" />
             </div>
-            <UserCheck className="w-4 h-4 text-emerald-600" />
-          </div>
+          )}
 
           {/* Quick Role Switcher (For Evaluation & QA) */}
           <div>
@@ -121,10 +144,11 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
               FAST ROLE SWITCHER
             </label>
             <select
-              value={currentUser.roleKey}
+              value={currentUser?.roleKey || 'superadmin'}
               onChange={(e) => switchRole(e.target.value)}
               className="w-full text-xs font-mono bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-slate-800 focus:outline-none focus:border-[#0038FF] shadow-xs"
             >
+              <option value="superadmin">Super Admin: Master Access</option>
               <option value="admin">Admin: David Vance</option>
               <option value="procurement">Procurement: Sarah Jenkins</option>
               <option value="finance">Finance: Marcus Sterling</option>
@@ -132,16 +156,26 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
             </select>
           </div>
 
-          {/* Back to Public Website Link */}
-          <a
-            href="https://aderno.net"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-between text-[11px] font-mono text-slate-500 hover:text-[#0038FF] transition-colors pt-1"
-          >
-            <span>Visit aderno.net showcase</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
+          {/* Actions: Sign Out & External Link */}
+          <div className="pt-1 flex items-center justify-between border-t border-slate-200/80">
+            <a
+              href="https://aderno.net"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-[11px] font-mono text-slate-500 hover:text-[#0038FF] transition-colors"
+            >
+              <span>aderno.net</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1 text-[11px] font-mono text-rose-600 hover:text-rose-700 font-bold transition-colors"
+            >
+              <LogOut className="w-3 h-3" />
+              <span>Sign Out</span>
+            </button>
+          </div>
 
         </div>
 
