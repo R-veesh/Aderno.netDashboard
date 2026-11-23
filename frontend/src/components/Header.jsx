@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Menu, Bell, Search, Plus, Sparkles, ExternalLink, Check, AlertCircle, LogOut } from 'lucide-react';
+import { Menu, Bell, Search, Plus, Sparkles, ExternalLink, Check, AlertCircle, LogOut, X, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -9,26 +9,53 @@ export default function Header({ setMobileOpen }) {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const notifRef = useRef(null);
 
-  // Close notifications popover on click outside
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (notifRef.current && !notifRef.current.contains(event.target)) {
-        setNotificationsOpen(false);
-      }
-    }
-    if (notificationsOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [notificationsOpen]);
+  // Operational Notification Items with Interactive State
+  const [notifications, setNotifications] = useState([
+    { 
+      id: 1, 
+      title: 'Duplicate Invoice Warning', 
+      time: '2m ago', 
+      type: 'alert', 
+      text: 'OmniFreight freight manifest matched PO-7711',
+      link: '/spending',
+      read: false 
+    },
+    { 
+      id: 2, 
+      title: 'Budget Threshold Notice', 
+      time: '1h ago', 
+      type: 'warn', 
+      text: 'Global Marketing is at 93.8% utilization cap',
+      link: '/budgets',
+      read: false 
+    },
+    { 
+      id: 3, 
+      title: 'New Requisition Pending', 
+      time: '3h ago', 
+      type: 'info', 
+      text: 'Alex Vance submitted REQ-1042 for H100 cluster',
+      link: '/requests',
+      read: false 
+    },
+  ]);
 
-  const notifications = [
-    { id: 1, title: 'Duplicate Invoice Warning', time: '2m ago', type: 'alert', text: 'OmniFreight freight manifest matched PO-7711' },
-    { id: 2, title: 'Budget Threshold Notice', time: '1h ago', type: 'warn', text: 'Global Marketing is at 93.8% utilization' },
-    { id: 3, title: 'New Requisition Pending', time: '3h ago', type: 'info', text: 'Alex Vance submitted REQ-1042 for H100 cluster' },
-  ];
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  const markAllAsRead = (e) => {
+    e?.stopPropagation();
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  };
+
+  const removeNotification = (e, id) => {
+    e?.stopPropagation();
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
+  const handleNotificationClick = (link) => {
+    setNotificationsOpen(false);
+    if (link) navigate(link);
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -77,43 +104,105 @@ export default function Header({ setMobileOpen }) {
         {/* Notifications Popover */}
         <div className="relative shrink-0" ref={notifRef}>
           <button
+            type="button"
             onClick={() => setNotificationsOpen(!notificationsOpen)}
-            className="p-1.5 sm:p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 relative hover:border-[#0038FF] transition-colors"
+            className="p-1.5 sm:p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 relative hover:border-[#0038FF] transition-colors focus:outline-none focus:ring-2 focus:ring-[#0038FF]/30"
             aria-label="Notifications"
           >
             <Bell className="w-4 h-4" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#FF5E1E]"></span>
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-[#FF5E1E] ring-2 ring-white animate-pulse"></span>
+            )}
           </button>
 
           {notificationsOpen && (
-            <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-white border border-slate-200 shadow-2xl p-4 z-50 animate-in fade-in slide-in-from-top-2">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-3">
-                <span className="font-display font-bold text-xs text-slate-900 uppercase tracking-wider">Operational Notifications</span>
-                <span className="text-[10px] font-mono text-[#0038FF] bg-[#0038FF]/10 font-bold px-2 py-0.5 rounded-full border border-[#0038FF]/20">3 NEW</span>
-              </div>
+            <>
+              {/* Backdrop for seamless closing on mobile and desktop */}
+              <div 
+                className="fixed inset-0 z-40 bg-slate-900/10 sm:bg-transparent" 
+                onClick={() => setNotificationsOpen(false)} 
+              />
 
-              <div className="space-y-2">
-                {notifications.map(n => (
-                  <div key={n.id} className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 hover:bg-slate-100/70 transition-colors">
-                    <div className="flex items-center justify-between text-xs font-bold text-slate-900 mb-1">
-                      <span>{n.title}</span>
-                      <span className="text-[10px] font-mono text-slate-400">{n.time}</span>
-                    </div>
-                    <p className="text-[11px] text-slate-600 leading-tight">{n.text}</p>
+              <div className="fixed left-3 right-3 top-14 sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96 rounded-2xl bg-white border border-slate-200 shadow-2xl p-4 z-50 animate-in fade-in slide-in-from-top-2 max-h-[80vh] overflow-y-auto">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="font-display font-bold text-xs text-slate-900 uppercase tracking-wider">
+                      Notifications
+                    </span>
+                    {unreadCount > 0 ? (
+                      <span className="text-[10px] font-mono text-[#0038FF] bg-[#0038FF]/10 font-bold px-2 py-0.5 rounded-full border border-[#0038FF]/20">
+                        {unreadCount} NEW
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-mono text-emerald-600 bg-emerald-50 font-bold px-2 py-0.5 rounded-full border border-emerald-200">
+                        CAUGHT UP
+                      </span>
+                    )}
                   </div>
-                ))}
-              </div>
+                  {unreadCount > 0 && (
+                    <button
+                      type="button"
+                      onClick={markAllAsRead}
+                      className="text-[11px] font-mono text-[#0038FF] hover:underline font-semibold"
+                    >
+                      Mark all read
+                    </button>
+                  )}
+                </div>
 
-              <div className="pt-3 mt-3 border-t border-slate-200 text-center">
-                <Link
-                  to="/ai-intelligence"
-                  onClick={() => setNotificationsOpen(false)}
-                  className="text-[11px] font-mono text-[#0038FF] font-bold hover:underline"
-                >
-                  View AI Spend Copilot Alerts &rarr;
-                </Link>
+                {notifications.length === 0 ? (
+                  <div className="py-6 text-center text-slate-500 space-y-1">
+                    <CheckCircle2 className="w-7 h-7 text-emerald-500 mx-auto mb-1" />
+                    <span className="text-xs font-bold text-slate-800 block">All caught up!</span>
+                    <span className="text-[11px] text-slate-400 block font-mono">No new alerts at this time</span>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {notifications.map(n => (
+                      <div 
+                        key={n.id}
+                        onClick={() => handleNotificationClick(n.link)}
+                        className={`p-2.5 rounded-xl border transition-all cursor-pointer relative group ${
+                          n.read 
+                            ? 'bg-slate-50/50 border-slate-100 opacity-75 hover:bg-slate-50' 
+                            : 'bg-slate-50 border-slate-200 hover:bg-blue-50/40 hover:border-[#0038FF]/30'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2 text-xs font-bold text-slate-900 mb-1">
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            {!n.read && <span className="w-1.5 h-1.5 rounded-full bg-[#0038FF] shrink-0"></span>}
+                            <span className="truncate">{n.title}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <span className="text-[10px] font-mono text-slate-400">{n.time}</span>
+                            <button
+                              type="button"
+                              onClick={(e) => removeNotification(e, n.id)}
+                              className="text-slate-400 hover:text-rose-600 p-0.5 rounded hover:bg-slate-200/60 transition-colors"
+                              title="Dismiss"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                        <p className="text-[11px] text-slate-600 leading-tight">{n.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="pt-3 mt-3 border-t border-slate-200 text-center">
+                  <Link
+                    to="/ai-intelligence"
+                    onClick={() => setNotificationsOpen(false)}
+                    className="text-[11px] font-mono text-[#0038FF] font-bold hover:underline inline-flex items-center gap-1"
+                  >
+                    <span>View AI Spend Copilot Alerts</span>
+                    <span aria-hidden="true">&rarr;</span>
+                  </Link>
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
 
