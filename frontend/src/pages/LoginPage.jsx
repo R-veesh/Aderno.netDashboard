@@ -101,7 +101,7 @@ export default function LoginPage() {
           <img 
             src="/aderno-logo.svg" 
             alt="Aderno Logo" 
-            className="h-12 w-auto object-contain group-hover:scale-105 transition-transform" 
+            className="h-16 sm:h-20 w-auto object-contain group-hover:scale-105 transition-transform" 
           />
         </Link>
         <h2 className="mt-4 font-display text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">

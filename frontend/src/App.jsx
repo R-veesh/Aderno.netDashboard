@@ -70,7 +70,7 @@ function RequireAuth({ children }) {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-4">
-        <img src="/aderno-logo.svg" alt="Aderno" className="h-10 w-auto animate-pulse mb-3" />
+        <img src="/aderno-logo.svg" alt="Aderno" className="h-14 sm:h-16 w-auto animate-pulse mb-3" />
         <span className="text-xs font-mono text-slate-500">Initializing Secure Firebase Session...</span>
       </div>
     );
@@ -90,7 +90,7 @@ export default function App() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-4">
-        <img src="/aderno-logo.svg" alt="Aderno" className="h-11 w-auto animate-pulse mb-3" />
+        <img src="/aderno-logo.svg" alt="Aderno" className="h-14 sm:h-16 w-auto animate-pulse mb-3" />
         <span className="text-xs font-mono text-slate-500">Connecting to Aderno Firebase Auth Cluster...</span>
       </div>
     );

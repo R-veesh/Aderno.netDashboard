@@ -59,7 +59,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
               <img 
                 src="/aderno-logo.svg" 
                 alt="Aderno Logo" 
-                className="h-9 sm:h-10 w-auto object-contain group-hover:scale-105 transition-transform" 
+                className="h-12 sm:h-14 w-auto object-contain group-hover:scale-105 transition-transform" 
               />
             </Link>
           </div>
